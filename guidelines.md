@@ -3,7 +3,8 @@
 
 # Introduction
 
-Draft version : (WIP , To be reviewed by review panel)
+_Draft version : (WIP , To be reviewed by review panel)_
+
 The OpsRamp platform is a collection of reusable services that encapsulate well-defined business capabilities. Developers are encouraged to access these capabilities through Application Programming Interfaces (APIs).This facilitates a great developer experience and the ability to quickly compose complex business processes by combining multiple, complementary capabilities as building blocks.
 
 OpsRamp  APIs follow the RESTful architectural style as much as possible. To support our objectives, we have developed a set of rules, standards, and conventions that apply to the design of RESTful APIs. These have been used to help design to meet the needs of a wide variety of use cases.
