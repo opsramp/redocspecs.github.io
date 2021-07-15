@@ -1,0 +1,309 @@
+openapi: 3.1.0
+info:
+  title: Installed Apps APIs
+  version: '1.0'
+  description: ''
+servers:
+  - url: 'https://api.domain.com'
+paths:
+  '/api/v2/tenants/{tenantId}/apps':
+    parameters:
+      - schema:
+          type: string
+        name: tenantId
+        in: path
+        required: true
+    get:
+      summary: Queries on the installed apps
+      responses:
+        '200':
+          description: User Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Get User Alice Smith:
+                  value:
+                    id: 142
+                    firstName: Alice
+                    lastName: Smith
+                    email: alice.smith@gmail.com
+                    dateOfBirth: '1997-10-31'
+                    emailVerified: true
+                    signUpDate: '2019-08-24'
+        '404':
+          description: Not found
+      operationId: get-app-listing
+      description: Minimal details of the installed apps - Paginated
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: installed
+          description: Installed apps or available apps
+        - schema:
+            type: string
+          in: query
+          name: profileId
+          description: Apps based on the profileId
+        - schema:
+            type: string
+          in: query
+          name: appConfig
+          description: configs list based on  given app
+        - schema:
+            type: string
+          in: query
+          name: orderBy
+          description: Aggregate based on attributes
+        - schema:
+            type: string
+          in: query
+          name: 'appName '
+          description: App Name to search
+      tags:
+        - Listing
+    post:
+      summary: Installs the given app
+      operationId: postapi-v2-tenants-tenantId-apps
+      responses:
+        '201':
+          description: Created
+      description: Installs the app as request in the payload
+      tags:
+        - Apps
+  '/api/v2/tenants/{tenantId}/apps/{installedAppId}':
+    parameters:
+      - schema:
+          type: string
+        name: tenantId
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: installedAppId
+        in: path
+        required: true
+    get:
+      summary: Get full details on the installed apps
+      responses:
+        '200':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Get User Alice Smith:
+                  value:
+                    id: 142
+                    firstName: Alice
+                    lastName: Smith
+                    email: alice.smith@gmail.com
+                    dateOfBirth: '1997-10-31'
+                    emailVerified: true
+                    signUpDate: '2019-08-24'
+        '404':
+          description: User Not Found
+      operationId: query-installed-apps
+      description: Retrieve the information of the app with the matching appsId
+      tags:
+        - Apps
+    delete:
+      summary: Uninstalls apps
+      operationId: deleteapi-v2-tenants-tenantId-apps
+      responses:
+        '200':
+          description: OK
+      description: Uninstalls a matching apps
+      tags:
+        - Apps
+  '/api/v2/tenants/{tenantId}/apps/{installedAppId}/{actions}':
+    parameters:
+      - schema:
+          type: string
+        name: tenantId
+        in: path
+        required: true
+      - schema:
+          type: string
+          enum:
+            - upgrade
+            - enable
+            - disable
+        name: actions
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: installedAppId
+        in: path
+        required: true
+    post:
+      summary: Actions on installed apps
+      operationId: app=actions
+      responses:
+        '200':
+          description: OK
+      description: Performs the appropirate actions ( enable/disable/logs)
+      tags:
+        - Apps
+  '/api/v2/tenants/{tenantId}/configs/{installedAppId}':
+    parameters:
+      - schema:
+          type: string
+        name: tenantId
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: installedAppId
+        in: path
+        required: true
+    post:
+      summary: Create apps discovery and monitoring configs
+      tags:
+        - Configs
+      operationId: post-profiles
+      description: Config creations for the intalled apps
+    get:
+      summary: Get all the profiles associates
+      operationId: get-profiles
+      responses:
+        '200':
+          description: OK
+      description: Listing all the associated profiles
+      tags:
+        - Configs
+  '/api/v2/tenants/{tenantId}/configs/{installedAppId}/configId':
+    post:
+      summary: Update a given config profile details
+      operationId: update-profiles
+      responses:
+        '200':
+          description: User Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                New User Bob Fellow:
+                  value:
+                    id: 12
+                    firstName: Bob
+                    lastName: Fellow
+                    email: bob.fellow@gmail.com
+                    dateOfBirth: '1996-08-24'
+                    emailVerified: false
+                    createDate: '2020-11-18'
+        '400':
+          description: Missing Required Information
+        '409':
+          description: Email Already Taken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                dateOfBirth:
+                  type: string
+                  format: date
+              required:
+                - firstName
+                - lastName
+                - email
+                - dateOfBirth
+            examples:
+              Create User Bob Fellow:
+                value:
+                  firstName: Bob
+                  lastName: Fellow
+                  email: bob.fellow@gmail.com
+                  dateOfBirth: '1996-08-24'
+        description: Post the necessary fields on updating the configs for the app
+      description: updates installed app profiles
+      tags:
+        - Configs
+    parameters:
+      - schema:
+          type: string
+        name: installedAppId
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: tenantId
+        in: path
+        required: true
+    get:
+      summary: Lists all configs of apps
+      operationId: get-api-v2-tenants-tenantId-apps-installedAppId-configs-configId
+      responses:
+        '200':
+          description: OK
+      description: Details
+      tags:
+        - Configs
+    delete:
+      summary: Removes the config profiles from the app
+      operationId: delete-api-v2-tenants-tenantId-apps-installedAppId-configs-configId
+      responses:
+        '200':
+          description: OK
+      description: Removes the given configurations
+      tags:
+        - Configs
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified
+tags:
+  - name: Apps
+  - name: Configs
+  - name: Listing
