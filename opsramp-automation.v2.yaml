@@ -1,0 +1,3677 @@
+openapi: 3.0.0
+info:
+  title: opsramp-automation
+  version: 2.0.0
+  description: Automation API Documentation
+  contact:
+    name: OpsRamp Support
+    email: support@opsramp.com
+    url: 'https://www.opsramp.com/about-opsramp/contact-us/'
+tags:
+  - name: automation
+    description: Example description.
+    externalDocs:
+      url: 'https://docs.opsramp.com/api/automation/'
+servers:
+  - url: 'https://api.opsramp.com'
+    description: Partner - All Others
+  - url: 'https://{subdomain}.api.opsramp.com'
+    description: Partner or Client custom branded sub-domain
+    variables:
+      subdomain:
+        default: demo
+        description: Custom sub-domain assigned to the client
+paths:
+  '/api/v2/tenants/{tenantId}/jobs':
+    summary: Create job
+    description: Creates a job.
+    post:
+      operationId: api-v2-tenants-tenantid-jobs-post
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  entities:
+                    $ref: '#/components/schemas/entities'
+                  schedule:
+                    $ref: '#/components/schemas/schedule'
+                  jobQueued:
+                    type: boolean
+                  script:
+                    $ref: '#/components/schemas/script'
+                  id:
+                    type: string
+              examples:
+                example-ad-checklist:
+                  value:
+                    name: Ad Check List
+                    entities:
+                      - resource:
+                          id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                          generalInfo:
+                            ipAddresses: 10.233.19.130
+                            hostName: 10.233.19.130
+                          clientUniqueId: client_13
+                          type: DEVICE
+                      - resource:
+                          id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                          generalInfo:
+                            ipAddresses: 172.30.1.60
+                            hostName: 172.30.1.60
+                          clientUniqueId: client_13
+                          type: DEVICE
+                    schedule:
+                      startDate: '2016-04-14T10:10:00+0000'
+                      pattern:
+                        type: daily
+                        frequency: recurrence
+                        repeatFrequency: 2
+                        repeatType: days
+                    jobQueued: true
+                    script:
+                      jobType: adCheckList
+                    id: 4902d87c-b5df-4797-9f45-e807cd871ac9
+                example-network-configuration-backup:
+                  value:
+                    name: Network Config Backup
+                    entities:
+                      - resource:
+                          id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                          generalInfo:
+                            ipAddresses: 10.233.19.130
+                            hostName: 10.233.19.130
+                          clientUniqueId: client_13
+                          type: DEVICE
+                      - resource:
+                          id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                          generalInfo:
+                            ipAddresses: 172.30.1.60
+                            hostName: 172.30.1.60
+                          clientUniqueId: client_13
+                          type: DEVICE
+                    schedule:
+                      startDate: '2016-04-14T10:10:00+0000'
+                      pattern:
+                        type: daily
+                        frequency: recurrence
+                        repeatFrequency: 2
+                        repeatType: days
+                    jobQueued: true
+                    script:
+                      jobType: networkconfigbackup
+                      configParams:
+                        versionsSaved: ALL_VERSIONS
+                        backUpTrigger: true
+                        startupConfigAlert: true
+                        runtimeConfigAlert: true
+                        startUpConfigFilesBackUp: true
+                        runTimeConfigFilesBackUp: true
+                    id: cc242a8d-b0b4-430e-a89f-7081bc5e79b0
+                example-app-install:
+                  value:
+                    name: test
+                    entities:
+                      - resource:
+                          id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                          generalInfo:
+                            ipAddresses: 10.233.19.130
+                            hostName: 10.233.19.130
+                          clientUniqueId: client_13
+                          type: DEVICE
+                      - resource:
+                          id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                          generalInfo:
+                            ipAddresses: 172.30.1.60
+                            hostName: 172.30.1.60
+                          clientUniqueId: client_13
+                          type: DEVICE
+                    schedule:
+                      startDate: '2016-04-14T10:10:00+0000'
+                      pattern:
+                        type: daily
+                        frequency: recurrence
+                        repeatFrequency: 2
+                        repeatType: days
+                    jobQueued: true
+                    script:
+                      jobType: appinstall
+                      approvalType:
+                        approvalType: 1
+                        approvalReason: for testing
+                        alertRequired: true
+                    id: 8a87f644-0bdc-4d5a-9e41-0ca333b71acd
+                example-custom-script:
+                  value:
+                    name: Job - test script
+                    entities:
+                      - resource:
+                          id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                          generalInfo:
+                            ipAddresses: 10.233.19.130
+                            hostName: 10.233.19.130
+                          clientUniqueId: client_13
+                          type: DEVICE
+                      - resource:
+                          id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                          generalInfo:
+                            ipAddresses: 172.30.1.60
+                            hostName: 172.30.1.60
+                          clientUniqueId: client_13
+                          type: DEVICE
+                    schedule:
+                      startDate: '2016-04-14T10:10:00+0000'
+                      pattern:
+                        type: daily
+                        frequency: recurrence
+                        repeatFrequency: 2
+                        repeatType: days
+                    jobQueued: true
+                    script:
+                      customScript:
+                        id: 7
+                        name: test script
+                        description: test script
+                        platforms:
+                          - WINDOWS
+                      parameters:
+                        - paramId: 2
+                          name: String
+                          value: '150'
+                      userType: 2
+                    id: ce1088d5-81cc-4262-b515-a75230f0d8e4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                script:
+                  $ref: '#/components/schemas/script'
+                entities:
+                  $ref: '#/components/schemas/entities'
+                name:
+                  type: string
+                  description: The job name.
+                jobQueued:
+                  type: boolean
+                  description: (Optional) To run a job constantly after execution of other jobs.
+                schedule:
+                  $ref: '#/components/schemas/schedule'
+                credentialSet:
+                  type: object
+                  properties:
+                    uniqueId:
+                      type: string
+                      description: |-
+                        (Optional) Device or client credential set ID.
+                        - Use Get Minimal Details of Device Credential Sets API to fetch the list of credentials sets assigned to a device.
+                        - Use Get Minimal Details of Client Credential Sets API to fetch the list of credentials assigned to a client.
+            examples:
+              example-ad-checklist:
+                value:
+                  name: Ad Check List
+                  jobQueued: 'true'
+                  entities:
+                    - resource:
+                        id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                        type: DEVICE
+                    - resource:
+                        id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                        type: DEVICE
+                  script:
+                    jobType: adCheckList
+                  schedule:
+                    startDate: '2016-04-14T10:10:10+0000'
+                    pattern:
+                      type: daily
+                      frequency: recurrence
+                      repeatType: Days
+                      repeatFrequency: '2'
+              example-network-configuration-backup:
+                value:
+                  name: Network Config Backup
+                  jobQueued: 'true'
+                  entities:
+                    - resource:
+                        id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                        type: DEVICE
+                    - resource:
+                        id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                        type: DEVICE
+                  script:
+                    jobType: networkconfigbackup
+                    configParams:
+                      versionsSaved: ALL_VERSIONS
+                      backUpTrigger: 'true'
+                      startupConfigAlert: 'true'
+                      runtimeConfigAlert: 'true'
+                      startUpConfigFilesBackUp: 'true'
+                      runTimeConfigFilesBackUp: 'true'
+                  schedule:
+                    startDate: '2016-04-14T10:10:10+0000'
+                    pattern:
+                      type: daily
+                      frequency: recurrence
+                      repeatType: Days
+                      repeatFrequency: '2'
+              example-app-install:
+                value:
+                  name: test
+                  jobQueued: 'true'
+                  entities:
+                    - resource:
+                        id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                        type: DEVICE
+                    - resource:
+                        id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                        type: DEVICE
+                  script:
+                    jobType: appinstall
+                    approvalType:
+                      approvalType: '1'
+                      approvalReason: for testing
+                      alertRequired: 'true'
+                  schedule:
+                    startDate: '2016-04-14T10:10:10+0000'
+                    pattern:
+                      type: daily
+                      frequency: recurrence
+                      repeatType: Days
+                      repeatFrequency: '2'
+              example-custom-script:
+                value:
+                  jobQueued: 'true'
+                  script:
+                    jobType: custom
+                    userType: '2'
+                    customScript:
+                      id: '7'
+                    parameters:
+                      - paramId: '2'
+                        value: '150'
+                  entities:
+                    - resource:
+                        id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                        type: DEVICE
+                    - resource:
+                        id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                        type: DEVICE
+                  schedule:
+                    startDate: '2016-04-14T10:10:10+0000'
+                    pattern:
+                      type: daily
+                      frequency: recurrence
+                      repeatType: Days
+                      repeatFrequency: '2'
+    parameters:
+      - $ref: '#/components/parameters/tenantId'
+  '/api/v2/tenants{tenantId}/jobs/{jobId}':
+    summary: Manage jobs
+    description: 'Gets, update, and delete the jobs.'
+    get:
+      operationId: api-v2-tenants-tenantid-jobs-id-get
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  entities:
+                    $ref: '#/components/schemas/entities'
+                  schedule:
+                    $ref: '#/components/schemas/schedule'
+                  jobQueued:
+                    type: boolean
+                  script:
+                    $ref: '#/components/schemas/script'
+                  id:
+                    type: string
+              examples:
+                example-ad-checklist:
+                  value:
+                    name: Ad Check List
+                    entities:
+                      - resource:
+                          id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                          generalInfo:
+                            ipAddresses: 172.30.1.60
+                            hostName: 172.30.1.60
+                            resourceType: Desktop
+                            resourceName: abc
+                            aliasName: ''
+                          clientUniqueId: client_13
+                          type: DEVICE
+                      - resource:
+                          id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                          generalInfo:
+                            ipAddresses: 10.233.19.130
+                            hostName: 10.233.19.130
+                            resourceType: Desktop
+                            resourceName: abcd
+                            aliasName: ''
+                          clientUniqueId: client_13
+                          type: DEVICE
+                    schedule:
+                      startDate: '2016-04-14T10:10:00+0000'
+                      pattern:
+                        type: daily
+                        frequency: recurrence
+                        repeatFrequency: 2
+                        repeatType: days
+                    jobQueued: true
+                    script:
+                      jobType: adCheckList
+                    id: 4902d87c-b5df-4797-9f45-e807cd871ac9
+                example-script:
+                  value:
+                    name: Job - test script
+                    entities:
+                      - resource:
+                          id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                          generalInfo:
+                            ipAddresses: 172.30.1.60
+                            hostName: 172.30.1.60
+                          clientUniqueId: client_13
+                          type: DEVICE
+                      - resource:
+                          id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                          generalInfo:
+                            ipAddresses: 10.233.19.130
+                            hostName: 10.233.19.130
+                          clientUniqueId: client_13
+                          type: DEVICE
+                    schedule:
+                      startDate: '2016-04-14T10:10:00+0000'
+                      pattern:
+                        type: daily
+                        frequency: recurrence
+                        repeatFrequency: 2
+                        repeatType: days
+                    jobQueued: true
+                    script:
+                      customScript:
+                        id: 7
+                        name: test script
+                        description: test script
+                        platforms:
+                          - WINDOWS
+                      parameters:
+                        - paramId: 2
+                          name: String
+                          value: '150'
+                      userType: 2
+                    id: ce1088d5-81cc-4262-b515-a75230f0d8e4
+                example-network-configuration-backup:
+                  value:
+                    name: Network Config Backup
+                    entities:
+                      - resource:
+                          id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                          generalInfo:
+                            ipAddresses: 172.30.1.60
+                            hostName: 172.30.1.60
+                          clientUniqueId: client_13
+                          type: DEVICE
+                      - resource:
+                          id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                          generalInfo:
+                            ipAddresses: 10.233.19.130
+                            hostName: 10.233.19.130
+                          clientUniqueId: client_13
+                          type: DEVICE
+                    schedule:
+                      startDate: '2016-04-14T10:10:00+0000'
+                      pattern:
+                        type: daily
+                        frequency: recurrence
+                        repeatFrequency: 2
+                        repeatType: days
+                    jobQueued: true
+                    script:
+                      jobType: networkconfigbackup
+                      configParams:
+                        versionsSaved: ALL_VERSIONS
+                        backUpTrigger: true
+                        startupConfigAlert: true
+                        runtimeConfigAlert: true
+                        startUpConfigFilesBackUp: true
+                        runTimeConfigFilesBackUp: true
+                    id: cc242a8d-b0b4-430e-a89f-7081bc5e79b0
+      description: ''
+    delete:
+      operationId: api-v2-tenants-tenantid-jobs-id-delete
+      description: Partners and service providers have permission to delete a client job.
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+    post:
+      operationId: api-v2-tenants-tenantid-jobs-id-post
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  entities:
+                    $ref: '#/components/schemas/entities'
+                  schedule:
+                    $ref: '#/components/schemas/schedule'
+                  jobQueued:
+                    type: boolean
+                  script:
+                    $ref: '#/components/schemas/script'
+                  id:
+                    type: string
+              examples:
+                example-ad-checklist:
+                  value:
+                    name: Ad Check List
+                    entities:
+                      - resource:
+                          id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                          generalInfo:
+                            ipAddresses: 10.233.19.130
+                            hostName: 10.233.19.130
+                          clientUniqueId: client_13
+                          type: DEVICE
+                      - resource:
+                          id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                          generalInfo:
+                            ipAddresses: 172.30.1.60
+                            hostName: 172.30.1.60
+                          clientUniqueId: client_13
+                          type: DEVICE
+                    schedule:
+                      startDate: '2016-04-14T10:10:00+0000'
+                      pattern:
+                        type: daily
+                        frequency: recurrence
+                        repeatFrequency: 2
+                        repeatType: days
+                    jobQueued: true
+                    script:
+                      jobType: adCheckList
+                    id: 4902d87c-b5df-4797-9f45-e807cd871ac9
+                example-network-configuration-backup:
+                  value:
+                    name: Network Config Backup
+                    entities:
+                      - resource:
+                          id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                          generalInfo:
+                            ipAddresses: 10.233.19.130
+                            hostName: 10.233.19.130
+                          clientUniqueId: client_13
+                          type: DEVICE
+                      - resource:
+                          id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                          generalInfo:
+                            ipAddresses: 172.30.1.60
+                            hostName: 172.30.1.60
+                          clientUniqueId: client_13
+                          type: DEVICE
+                    schedule:
+                      startDate: '2016-04-14T10:10:00+0000'
+                      pattern:
+                        type: daily
+                        frequency: recurrence
+                        repeatFrequency: 2
+                        repeatType: days
+                    jobQueued: true
+                    script:
+                      jobType: networkconfigbackup
+                      configParams:
+                        versionsSaved: ALL_VERSIONS
+                        backUpTrigger: true
+                        startupConfigAlert: true
+                        runtimeConfigAlert: true
+                        startUpConfigFilesBackUp: true
+                        runTimeConfigFilesBackUp: true
+                    id: cc242a8d-b0b4-430e-a89f-7081bc5e79b0
+                example-app-install:
+                  value:
+                    name: test
+                    entities:
+                      - resource:
+                          id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                          generalInfo:
+                            ipAddresses: 10.233.19.130
+                            hostName: 10.233.19.130
+                          clientUniqueId: client_13
+                          type: DEVICE
+                      - resource:
+                          id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                          generalInfo:
+                            ipAddresses: 172.30.1.60
+                            hostName: 172.30.1.60
+                          clientUniqueId: client_13
+                          type: DEVICE
+                    schedule:
+                      startDate: '2016-04-14T10:10:00+0000'
+                      pattern:
+                        type: daily
+                        frequency: recurrence
+                        repeatFrequency: 2
+                        repeatType: days
+                    jobQueued: true
+                    script:
+                      jobType: appinstall
+                      approvalType:
+                        approvalType: 1
+                        approvalReason: for testing
+                        alertRequired: true
+                    id: 8a87f644-0bdc-4d5a-9e41-0ca333b71acd
+                example-custom-script:
+                  value:
+                    name: Job - test script
+                    entities:
+                      - resource:
+                          id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                          generalInfo:
+                            ipAddresses: 10.233.19.130
+                            hostName: 10.233.19.130
+                          clientUniqueId: client_13
+                          type: DEVICE
+                      - resource:
+                          id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                          generalInfo:
+                            ipAddresses: 172.30.1.60
+                            hostName: 172.30.1.60
+                          clientUniqueId: client_13
+                          type: DEVICE
+                    schedule:
+                      startDate: '2016-04-14T10:10:00+0000'
+                      pattern:
+                        type: daily
+                        frequency: recurrence
+                        repeatFrequency: 2
+                        repeatType: days
+                    jobQueued: true
+                    script:
+                      customScript:
+                        id: 7
+                        name: test script
+                        description: test script
+                        platforms:
+                          - WINDOWS
+                      parameters:
+                        - paramId: 2
+                          name: String
+                          value: '150'
+                      userType: 2
+                    id: ce1088d5-81cc-4262-b515-a75230f0d8e4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                jobQueued:
+                  type: boolean
+                entities:
+                  $ref: '#/components/schemas/entities'
+                script:
+                  $ref: '#/components/schemas/script'
+                schedule:
+                  $ref: '#/components/schemas/schedule'
+            examples:
+              example-ad-checklist:
+                value:
+                  id: 4902d87c-b5df-4797-9f45-e807cd871ac9
+                  name: Ad Check List
+                  jobQueued: 'true'
+                  entities:
+                    - resource:
+                        id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                        type: DEVICE
+                    - resource:
+                        id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                        type: DEVICE
+                  script:
+                    jobType: adCheckList
+                  schedule:
+                    startDate: '2016-04-14T10:10:10+0000'
+                    pattern:
+                      type: daily
+                      frequency: recurrence
+                      repeatType: Days
+                      repeatFrequency: '2'
+              example-network-configuration-backup:
+                value:
+                  id: cc242a8d-b0b4-430e-a89f-7081bc5e79b0
+                  name: Network Config Backup
+                  jobQueued: 'true'
+                  entities:
+                    - resource:
+                        id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                        type: DEVICE
+                    - resource:
+                        id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                        type: DEVICE
+                  script:
+                    jobType: networkconfigbackup
+                    configParams:
+                      versionsSaved: ALL_VERSIONS
+                      backUpTrigger: 'true'
+                      startupConfigAlert: 'true'
+                      runtimeConfigAlert: 'true'
+                      startUpConfigFilesBackUp: 'true'
+                      runTimeConfigFilesBackUp: 'true'
+                  schedule:
+                    startDate: '2016-04-14T10:10:10+0000'
+                    pattern:
+                      type: daily
+                      frequency: recurrence
+                      repeatType: Days
+                      repeatFrequency: '2'
+              example-app-install:
+                value:
+                  id: 8a87f644-0bdc-4d5a-9e41-0ca333b71acd
+                  name: test
+                  jobQueued: 'true'
+                  entities:
+                    - resource:
+                        id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                        type: DEVICE
+                    - resource:
+                        id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                        type: DEVICE
+                  script:
+                    jobType: appinstall
+                    approvalType:
+                      approvalType: '1'
+                      approvalReason: for testing
+                      alertRequired: 'true'
+                  schedule:
+                    startDate: '2016-04-14T10:10:10+0000'
+                    pattern:
+                      type: daily
+                      frequency: recurrence
+                      repeatType: Days
+                      repeatFrequency: '2'
+              example-custom-script:
+                value:
+                  id: ce1088d5-81cc-4262-b515-a75230f0d8e4
+                  jobQueued: 'true'
+                  script:
+                    jobType: custom
+                    userType: '2'
+                    customScript:
+                      id: '7'
+                    parameters:
+                      - paramId: '2'
+                        value: '150'
+                  entities:
+                    - resource:
+                        id: 709824de-8315-4cf9-ad1c-b15aaf7bf2a5
+                        type: DEVICE
+                    - resource:
+                        id: 4e96d5bc-763c-4c00-beab-928d653a0422
+                        type: DEVICE
+                  schedule:
+                    startDate: '2016-04-14T10:10:10+0000'
+                    pattern:
+                      type: daily
+                      frequency: recurrence
+                      repeatType: Days
+                      repeatFrequency: '2'
+    parameters:
+      - $ref: '#/components/parameters/tenantId'
+      - $ref: '#/components/parameters/jobId'
+  '/api/v2/tenants/{tenantId}/jobs/types':
+    summary: Get job types list
+    description: Gets the list of job types.
+    get:
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobNameAndType:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        jobName:
+                          type: string
+                        jobtype:
+                          type: string
+              examples:
+                example-1:
+                  value:
+                    jobNameAndType:
+                      - jobName: AD CheckList
+                        jobtype: adCheckList
+                      - jobName: Anti SpyWare
+                        jobtype: antispyware
+                      - jobName: Antivirus Update
+                        jobtype: antivirus
+                      - jobName: Application Scan
+                        jobtype: appaudit
+                      - jobName: Asset Information
+                        jobtype: assetinfo
+                      - jobName: BackUp Agent
+                        jobtype: backupagent
+                      - jobName: Disk Defragmentation
+                        jobtype: diskdefrag
+                      - jobName: EXBPA CheckList
+                        jobtype: exbpaCheckList
+                      - jobName: Missing Patches Request
+                        jobtype: missingPatchesRequest
+                      - jobName: MSSQL Report
+                        jobtype: sqlreport
+                      - jobName: Network Configuration Backup
+                        jobtype: networkconfigbackup
+                      - jobName: TempFiles Deletion
+                        jobtype: tempfilesreport
+                      - jobName: Application Install
+                        jobtype: appinstall
+                      - jobName: Application Update
+                        jobtype: appupdate
+    parameters:
+      - $ref: '#/components/parameters/tenantId'
+  '/api/v2/tenants/{tenantId}/jobs/{jobId}/run':
+    summary: Run scheduled job
+    description: Runs a scheduled job.
+    get:
+      tags:
+        - automation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: |
+                    Reason to run the job
+            examples:
+              example-1:
+                value:
+                  reason: To run job on demand
+      responses:
+        '200':
+          description: OK
+    parameters:
+      - $ref: '#/components/parameters/tenantId'
+      - $ref: '#/components/parameters/jobId'
+  '/api/v2/tenants/{tenantId}jobs/{jobId}/script/run':
+    summary: Run a script
+    description: |-
+      Runs a script.
+
+      Define scripts as code that can run commonly-run tasks. This endpoint can be used to run an existing job script.
+    post:
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+    parameters:
+      - $ref: '#/components/parameters/jobId'
+      - $ref: '#/components/parameters/tenantId'
+  '/api/v2/tenants/{tenantId}/jobs/search':
+    summary: Get tenant jobs list
+    description: |
+      Gets the list of jobs defined by a tenant.
+
+      This endpoint can be used to fetch the paginated list of the scheduled jobs of a partner or client.
+    get:
+      tags:
+        - automation
+      parameters:
+        - schema:
+            type: integer
+            default: '1'
+          in: query
+          name: pageNo
+        - schema:
+            type: integer
+            default: '100'
+          in: query
+          name: pageSize
+        - schema:
+            type: boolean
+            default: 'true'
+          in: query
+          name: isDescendingOrder
+        - schema:
+            type: string
+            default: id
+          in: query
+          name: sortName
+        - schema:
+            type: string
+          in: query
+          name: queryString
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        jobQueued:
+                          type: boolean
+                        script:
+                          $ref: '#/components/schemas/script'
+                        id:
+                          type: string
+                        totalResults:
+                          type: integer
+                        orderBy:
+                          type: string
+                        pageNo:
+                          type: integer
+                        pageSize:
+                          type: integer
+                        totalPages:
+                          type: integer
+                        nextPage:
+                          type: boolean
+                        previousPageNo:
+                          type: integer
+                        descendingOrder:
+                          type: boolean
+              examples:
+                example-1:
+                  value:
+                    results:
+                      - name: test
+                        schedule:
+                          startDate: '2016-04-14T10:10:00+0000'
+                          pattern:
+                            type: daily
+                            frequency: recurrence
+                            repeatFrequency: 2
+                            repeatType: days
+                        jobQueued: true
+                        script:
+                          jobType: appinstall
+                          approvalType:
+                            approvalType: 1
+                            approvalReason: for testing
+                            alertRequired: true
+                        id: 8a87f644-0bdc-4d5a-9e41-0ca333b71acd
+                      - name: Network Config Backup
+                        schedule:
+                          startDate: '2016-04-14T10:10:00+0000'
+                          pattern:
+                            type: daily
+                            frequency: recurrence
+                            repeatFrequency: 2
+                            repeatType: days
+                        jobQueued: true
+                        script:
+                          jobType: networkconfigbackup
+                          configParams:
+                            versionsSaved: ALL_VERSIONS
+                            backUpTrigger: true
+                            startupConfigAlert: true
+                            runtimeConfigAlert: true
+                            startUpConfigFilesBackUp: true
+                            runTimeConfigFilesBackUp: true
+                        id: cc242a8d-b0b4-430e-a89f-7081bc5e79b0
+                      - name: Job - test script
+                        schedule:
+                          startDate: '2016-04-14T10:10:00+0000'
+                          pattern:
+                            type: daily
+                            frequency: recurrence
+                            repeatFrequency: 2
+                            repeatType: days
+                        jobQueued: true
+                        script:
+                          customScript:
+                            id: 7
+                            name: test script
+                            description: test script
+                            platforms:
+                              - WINDOWS
+                          userType: 2
+                        id: ce1088d5-81cc-4262-b515-a75230f0d8e4
+                      - name: Ad Check List
+                        schedule:
+                          startDate: '2016-04-14T10:10:00+0000'
+                          pattern:
+                            type: daily
+                            frequency: recurrence
+                            repeatFrequency: 2
+                            repeatType: days
+                        jobQueued: true
+                        script:
+                          jobType: adCheckList
+                        id: 4902d87c-b5df-4797-9f45-e807cd871ac9
+                    totalResults: 4
+                    orderBy: job.name
+                    pageNo: 1
+                    pageSize: 10
+                    totalPages: 1
+                    nextPage: false
+                    previousPageNo: 0
+                    descendingOrder: true
+    parameters:
+      - $ref: '#/components/parameters/tenantId'
+  '/api/v2/tenants/{tenantId}/rba/categories':
+    summary: Manage RBA categories
+    description: Creates and updates an RBA category and gets a list of RBA categories.
+    post:
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  id:
+                    type: integer
+              examples:
+                example-1:
+                  value:
+                    id: 28
+                    name: CLIENT-Category
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the category
+                parent:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: (Optional) Specify the parent ID of the category to create a subcategory.
+              required:
+                - name
+            examples:
+              example-1:
+                value:
+                  name: CLIENT-Category
+                  parent:
+                    id: 27
+    get:
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/rba'
+              examples:
+                example-1:
+                  value:
+                    - id: 1
+                      name: Miscellaneous
+                    - id: 16
+                      name: API Task Category
+                      childs:
+                        - id: 17
+                          name: Child-1
+                          childs:
+                            - id: 33
+                              name: child-1-child
+                        - id: 18
+                          name: Child-2
+                        - id: 19
+                          name: Child-3-client
+                    - id: 7
+                      name: Applications
+                      childs:
+                        - id: 8
+                          name: QuickBooks
+                    - id: 31
+                      name: C_Category
+                    - id: 24
+                      name: SP_Category
+                      childs:
+                        - id: 25
+                          name: SP_Category_child
+                        - id: 26
+                          name: MSP-Category
+                    - id: 13
+                      name: Test Global Category
+    put:
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  id:
+                    type: integer
+              examples:
+                example-1:
+                  value:
+                    id: 22
+                    name: CLIENT-Category_UpdatedName
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: |
+                    Name of the category
+                id:
+                  type: integer
+              required:
+                - name
+                - id
+            examples:
+              example-1:
+                value:
+                  id: 22
+                  name: CLIENT-Category_UpdatedName
+    parameters:
+      - $ref: '#/components/parameters/tenantId'
+  '/api/v2/tenants/{tenantId}/rba/categories/{categoryId}':
+    summary: Delete RBA category
+    description: |-
+      Deletes an RBA category.
+
+      Categories are only deleted when no scripts exist in that category (or related child categories).
+    delete:
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+    parameters:
+      - $ref: '#/components/parameters/tenantId'
+      - schema:
+          type: string
+        in: path
+        name: categoryId
+        required: true
+  '/api/v2/tenants/{tenantId}/rba/categories/{categoryId}/scripts':
+    summary: Manage scripts
+    description: Creates and deletes a script and gets a list of scripts for a category.
+    post:
+      description: |-
+        When creating a script:
+
+        - Attachment files must be converted to byte stream and base64-encoded. Always include a name and file.
+        - To get the list of available categories, invoke the Get Categories endpoint.
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rbaScript'
+              examples:
+                example-1:
+                  value:
+                    id: 78
+                    name: Restart Service
+                    description: Restart Service
+                    category:
+                      id: 28
+                      name: CLIENT-Category
+                    platforms:
+                      - WINDOWS
+                      - LINUX
+                    parameters:
+                      - id: 102
+                        name: Test Param - 1
+                        description: Testing please ignore
+                        defaultValue: '10'
+                        type: REQUIRED
+                        dataType: INTEGER
+                      - id: 103
+                        name: Test Param - 2
+                        description: Testing please ignore
+                        defaultValue: '50'
+                        type: OPTIONAL
+                        dataType: STRING
+                    executionType: SHELL
+                    installTimeout: 50
+                    attachment:
+                      id: 0
+                      name: apache-restart.sh
+                      contentURL: 'https://localhost:8443/downloadScript.do?action=downloadAgent&fileName=apache-restart.sh&version=0.00'
+                    scriptVersion: '0.00'
+                    registryPath: HKEY_CURRENT_USER/Control Panel/Desktop
+                    registryValue: 'dword:00000001'
+                    processName: cmd.exe
+                    serviceName: OpsRampAgent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: |
+                    Script name.
+                description:
+                  type: string
+                  description: |
+                    Description for the script.
+                platforms:
+                  type: array
+                  description: |
+                    (Optional) OS platforms.Example: WINDOWS, LINUX
+                  items:
+                    type: string
+                executionType:
+                  type: string
+                  description: 'Script execution type.Supported Values: BATCHFILE, COMMAND, DOWNLOAD, EXE, MSI, POWERSHELL, PYTHON, PERL, PHP, SHELL, VBS'
+                  enum:
+                    - BATCHFILE
+                    - COMMAND
+                    - DOWNLOAD
+                    - DOWNLOAD
+                    - EXE
+                    - MSI
+                    - POWERSHELL
+                    - PYTHON
+                    - PERL
+                    - PHP
+                    - SHELL
+                    - VBS
+                installTimeout:
+                  type: integer
+                  description: |
+                    (Optional) Maximum time for installation.
+                registryPath:
+                  type: string
+                  description: |
+                    (Optional) Registry path for sanity check after execution.
+                registryValue:
+                  type: string
+                  description: |
+                    (Optional) Registry Value for sanity check after execution.
+                processName:
+                  type: string
+                  description: |
+                    (Optional) Process name for sanity check.
+                serviceName:
+                  type: string
+                  description: |
+                    (Optional) Service name for sanity check.
+                attachment:
+                  type: object
+                  description: |
+                    If executionType is COMMAND, then command is needed else attachment file is needed.
+                  properties:
+                    name:
+                      type: string
+                    file:
+                      type: string
+                parameters:
+                  type: array
+                  description: |
+                    (Optional) Parameter data.
+                  items:
+                    $ref: '#/components/schemas/rbaScriptParameter'
+                command:
+                  type: string
+                outputDirectory:
+                  type: string
+                  description: |
+                    (Optional) Output directory supported required only when executionType is DOWNLOAD, EXE, MSI.
+                outputFile:
+                  type: string
+                  description: |
+                    (Optional) Output file supported required only when executionType is DOWNLOAD, EXE, MSI.
+            examples:
+              example-1:
+                value:
+                  name: Restart Apache
+                  description: Restart Apache using Shell
+                  platforms:
+                    - WINDOWS
+                    - LINUX
+                  executionType: SHELL
+                  installTimeout: '50'
+                  registryPath: HKEY_CURRENT_USER/Control Panel/Desktop
+                  registryValue: 'dword:00000001'
+                  processName: cmd.exe
+                  serviceName: OpsRampAgent
+                  attachment:
+                    name: apache-restart.sh
+                    file: UkVTVEFSVD0iL3NiaW4vc2VydmljZSBodHRwZCByZXN0YXJ0Ig0KUEdSRVA9Ii91c3IvYmluL3BncmVwIg0KSFRUUEQ9Imh0dHBkIg0KJFBHUkVQICR7SFRUUER9DQppZiBbICQ/IC1uZSAwIF0NCnRoZW4NCiAkUkVTVEFSVA0KZmk=
+                  parameters:
+                    - name: Test Param - 1
+                      description: Testing please ignore
+                      defaultValue: '10'
+                      type: REQUIRED
+                      dataType: INTEGER
+                    - name: Test Param - 2
+                      description: Testing please ignore
+                      defaultValue: '50'
+                      type: OPTIONAL
+                      dataType: STRING
+    delete:
+      description: Partners can delete client or partner scripts. A client can only delete client-specific scripts.
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+    get:
+      description: A list of scripts is retrieved within a category.
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rbaScript'
+              examples:
+                example-1:
+                  value:
+                    id: 73
+                    name: Restart Apache Service
+                    description: Restart Apache Service
+                    category:
+                      id: 28
+                      name: CLIENT-Category
+                    platforms:
+                      - WINDOWS
+                      - LINUX
+                    parameters:
+                      - id: 94
+                        name: Test Param - 1
+                        description: Testing please ignore
+                        defaultValue: '10'
+                        type: REQUIRED
+                        dataType: INTEGER
+                      - id: 95
+                        name: Test Param - 2
+                        description: Testing please ignore
+                        defaultValue: '50'
+                        type: OPTIONAL
+                        dataType: STRING
+                      - id: 96
+                        name: New param - 3
+                        description: Testing please ignore
+                        defaultValue: '50'
+                        type: OPTIONAL
+                        dataType: STRING
+                    executionType: SHELL
+                    installTimeout: 50
+                    attachment:
+                      id: 0
+                      name: apache-restart.sh
+                      contentURL: 'https://localhost:8443/downloadScript.do?action=downloadAgent&fileName=apache-restart.sh&version=5.00'
+                    scriptVersion: '5.00'
+                    registryPath: HKEY_CURRENT_USER/Control Panel/Desktop
+                    registryValue: 'dword:00000001'
+                    processName: cmd.exe
+                    serviceName: OpsRampAgent
+    parameters:
+      - $ref: '#/components/parameters/tenantId'
+      - $ref: '#/components/parameters/categoryId'
+  '/api/v2/tenants/{tenantId}/rba/scripts/{scriptId}/paginatedOutputs':
+    summary: Get output logs
+    description: Gets paginated output logs of a script.
+    get:
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        output:
+                          type: string
+                        responseDate:
+                          type: string
+                        type:
+                          type: string
+                        task:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                        owner:
+                          type: object
+                          properties:
+                            loginName:
+                              type: string
+                            lastName:
+                              type: string
+                            firstName:
+                              type: string
+                            email:
+                              type: string
+                            phoneNumber:
+                              type: string
+                  totalResults:
+                    type: integer
+                  orderBy:
+                    type: string
+                  pageNo:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  nextPage:
+                    type: boolean
+                  previousPageNo:
+                    type: integer
+                  descendingOrder:
+                    type: boolean
+              examples:
+                example-1:
+                  value:
+                    results:
+                      - output: Agent Offline
+                        responseDate: '2017-04-02T05:35:10+0000'
+                        type: ONDEMAND
+                        task:
+                          id: 8
+                          name: Host Namme
+                        device:
+                          id: 3b05e1ff-9eac-476d-8d45-06c8e1f5299f
+                          generalInfo:
+                            osName: Ubuntu 12.04.5 LTS
+                            ipAddresses: 172.22.221.41
+                            hostName: luminalto-qa45k.luml.com
+                          clientUniqueId: client_69828
+                          type: DEVICE
+                        owner:
+                          loginName: superadmin
+                          lastName: Admin
+                          firstName: Super
+                          email: john.smith@domain.com
+                          phoneNumber: ''
+                      - output: Agent Offline
+                        responseDate: '2017-04-02T05:35:10+0000'
+                        type: ONDEMAND
+                        task:
+                          id: 8
+                          name: Host Namme
+                        device:
+                          id: DEV0000015681
+                          generalInfo:
+                            osName: 'Microsoft Windows 7 Professional Service Pack 1, 32-bit'
+                            ipAddresses: 172.22.221.37
+                            hostName: qa-win2k8ssta.testbed.qa.com
+                            osbuildNumber: 0
+                          clientUniqueId: client_69828
+                          type: DEVICE
+                        owner:
+                          loginName: superadmin
+                          lastName: Admin
+                          firstName: Super
+                          email: john.smith@domain.com
+                          phoneNumber: ''
+                      - output: ''
+                        responseDate: '2017-04-02T05:35:10+0000'
+                        type: ONDEMAND
+                        device:
+                          id: DEV0000015679
+                          generalInfo:
+                            ipAddresses: 172.22.221.107
+                            hostName: hydpc007.luminalto.com
+                            buildNumber: 0
+                          clientUniqueId: client_69828
+                          type: DEVICE
+                        owner:
+                          id: USR0000000001
+                          loginName: superadmin
+                          lastName: Admin
+                          firstName: Super
+                          email: john.smith@domain.com
+                          phoneNumber: ''
+                    totalResults: 2
+                    orderBy: res.response_time
+                    pageNo: 1
+                    pageSize: 100
+                    totalPages: 1
+                    nextPage: false
+                    previousPageNo: 0
+                    descendingOrder: true
+    parameters:
+      - $ref: '#/components/parameters/tenantId'
+      - $ref: '#/components/parameters/scriptId'
+  '/api/v2/tenants/{tenantId}/rba/categories/{categoryId}/scripts/{scriptId}':
+    summary: Manage scripts by ID
+    description: Gets and update the details of a script.
+    get:
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/rbaScript'
+              examples:
+                example-1:
+                  value:
+                    - id: 73
+                      name: Restart Apache Service
+                      description: Restart Apache Service
+                      category:
+                        id: 28
+                        name: CLIENT-Category
+                      platforms:
+                        - WINDOWS
+                        - LINUX
+                      parameters:
+                        - id: 94
+                          name: Test Param - 1
+                          description: Testing please ignore
+                          defaultValue: '10'
+                          type: REQUIRED
+                          dataType: INTEGER
+                        - id: 95
+                          name: Test Param - 2
+                          description: Testing please ignore
+                          defaultValue: '50'
+                          type: OPTIONAL
+                          dataType: STRING
+                        - id: 96
+                          name: New param - 3
+                          description: Testing please ignore
+                          defaultValue: '50'
+                          type: OPTIONAL
+                          dataType: STRING
+                      executionType: SHELL
+                      installTimeout: 50
+                      attachment:
+                        id: 0
+                        name: apache-restart.sh
+                        contentURL: 'https://localhost:8443/downloadScript.do?action=downloadAgent&fileName=apache-restart.sh&version=5.00'
+                      scriptVersion: '5.00'
+                      registryPath: HKEY_CURRENT_USER/Control Panel/Desktop
+                      registryValue: 'dword:00000001'
+                      processName: cmd.exe
+                      serviceName: OpsRampAgent
+                    - id: 77
+                      name: Restart Apache test
+                      description: Restart Apache using Shell
+                      category:
+                        id: 28
+                        name: CLIENT-Category
+                      platforms:
+                        - WINDOWS
+                        - LINUX
+                      parameters:
+                        - id: 100
+                          name: Test Param - 1
+                          description: Testing please ignore
+                          defaultValue: '10'
+                          type: REQUIRED
+                          dataType: INTEGER
+                        - id: 101
+                          name: Test Param - 2
+                          description: Testing please ignore
+                          defaultValue: '50'
+                          type: OPTIONAL
+                          dataType: STRING
+                      executionType: SHELL
+                      installTimeout: 50
+                      attachment:
+                        id: 0
+                        name: apache-restart.sh
+                        contentURL: 'https://localhost:8443/downloadScript.do?action=downloadAgent&fileName=apache-restart.sh&version=0.00'
+                      scriptVersion: '0.00'
+                      registryPath: HKEY_CURRENT_USER/Control Panel/Desktop
+                      registryValue: 'dword:00000001'
+                      processName: cmd.exe
+                      serviceName: OpsRampAgent
+                    - id: 78
+                      name: Restart Service
+                      description: Restart Apache using Shell
+                      category:
+                        id: 28
+                        name: CLIENT-Category
+                      platforms:
+                        - WINDOWS
+                        - LINUX
+                      parameters:
+                        - id: 102
+                          name: Test Param - 1
+                          description: Testing please ignore
+                          defaultValue: '10'
+                          type: REQUIRED
+                          dataType: INTEGER
+                        - id: 103
+                          name: Test Param - 2
+                          description: Testing please ignore
+                          defaultValue: '50'
+                          type: OPTIONAL
+                          dataType: STRING
+                      executionType: SHELL
+                      installTimeout: 50
+                      attachment:
+                        id: 0
+                        name: apache-restart.sh
+                        contentURL: 'https://localhost:8443/downloadScript.do?action=downloadAgent&fileName=apache-restart.sh&version=0.00'
+                      scriptVersion: '0.00'
+                      registryPath: HKEY_CURRENT_USER/Control Panel/Desktop
+                      registryValue: 'dword:00000001'
+                      processName: cmd.exe
+                      serviceName: OpsRampAgent
+                    - id: 79
+                      name: Restart Service shell
+                      description: Restart Apache using Shell
+                      category:
+                        id: 28
+                        name: CLIENT-Category
+                      platforms:
+                        - WINDOWS
+                        - LINUX
+                      parameters:
+                        - id: 104
+                          name: Test Param - 1
+                          description: Testing please ignore
+                          defaultValue: '10'
+                          type: REQUIRED
+                          dataType: INTEGER
+                        - id: 105
+                          name: Test Param - 2
+                          description: Testing please ignore
+                          defaultValue: '50'
+                          type: OPTIONAL
+                          dataType: STRING
+                      executionType: SHELL
+                      installTimeout: 50
+                      attachment:
+                        id: 0
+                        name: apache-restart.sh
+                        contentURL: 'https://localhost:8443/downloadScript.do?action=downloadAgent&fileName=apache-restart.sh&version=0.00'
+                      scriptVersion: '0.00'
+                      registryPath: HKEY_CURRENT_USER/Control Panel/Desktop
+                      registryValue: 'dword:00000001'
+                      processName: cmd.exe
+                      serviceName: OpsRampAgent
+    post:
+      description: |-
+        To update a script:
+
+        - Attachment files must be converted to byte stream and base64-encoded. Always include a name and file.
+        - To get the list of available categories, invoke the Get Categories endpoint.
+      tags:
+        - automation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rbaScript'
+              examples:
+                example-1:
+                  value:
+                    id: 73
+                    name: Restart Apache Service
+                    description: Restart Apache Service
+                    category:
+                      id: 28
+                      name: CLIENT-Category
+                    platforms:
+                      - WINDOWS
+                      - LINUX
+                    parameters:
+                      - id: 94
+                        name: Test Param - 1
+                        description: Testing please ignore
+                        defaultValue: '10'
+                        type: REQUIRED
+                        dataType: INTEGER
+                      - id: 95
+                        name: Test Param - 2
+                        description: Testing please ignore
+                        defaultValue: '50'
+                        type: OPTIONAL
+                        dataType: STRING
+                      - id: 96
+                        name: New param - 3
+                        description: Testing please ignore
+                        defaultValue: '50'
+                        type: OPTIONAL
+                        dataType: STRING
+                    executionType: SHELL
+                    installTimeout: 50
+                    attachment:
+                      id: 0
+                      name: apache-restart.sh
+                      contentURL: 'https://localhost:8443/downloadScript.do?action=downloadAgent&fileName=apache-restart.sh&version=6.00'
+                    scriptVersion: '6.00'
+                    registryPath: HKEY_CURRENT_USER/Control Panel/Desktop
+                    registryValue: 'dword:00000001'
+                    processName: cmd.exe
+                    serviceName: OpsRampAgent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                platforms:
+                  type: array
+                  items:
+                    type: string
+                registryPath:
+                  type: string
+                registryValue:
+                  type: string
+                processName:
+                  type: string
+                serviceName:
+                  type: string
+                parameters:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/rbaScriptParameter'
+                executionType:
+                  type: string
+                installTimeout:
+                  type: boolean
+                attachment:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    file:
+                      type: string
+            examples:
+              example-1:
+                value:
+                  name: Restart Apache Service
+                  description: Restart Apache Service
+                  platforms:
+                    - WINDOWS
+                    - LINUX
+                  registryPath: HKEY_CURRENT_USER/Control Panel/Desktop
+                  registryValue: 'dword:00000001'
+                  processName: cmd.exe
+                  serviceName: OpsRampAgent
+                  parameters:
+                    - name: Test Param - 1
+                      description: Testing please ignore
+                      defaultValue: '10'
+                      type: REQUIRED
+                      dataType: INTEGER
+                    - name: Test Param - 2
+                      description: Testing please ignore
+                      defaultValue: '50'
+                      type: OPTIONAL
+                      dataType: STRING
+                    - name: New param - 3
+                      description: Testing please ignore
+                      defaultValue: '50'
+                      type: OPTIONAL
+                      dataType: STRING
+                  executionType: SHELL
+                  installTimeout: 50
+                  attachment:
+                    name: apache-restart.sh
+                    file: UkVTVEFSVD0iL3NiaW4vc2VydmljZSBodHRwZCByZXN0YXJ0Ig0KUEdSRVA9Ii91c3IvYmluL3BncmVwIg0KSFRUUEQ9Imh0dHBkIg0KJFBHUkVQICR7SFRUUER9DQppZiBbICQ/IC1uZSAwIF0NCnRoZW4NCiAkUkVTVEFSVA0KZmk=
+    parameters:
+      - $ref: '#/components/parameters/tenantId'
+      - $ref: '#/components/parameters/categoryId'
+      - $ref: '#/components/parameters/scriptId'
+  '/api/v2/tenants/{tenant_id}/metadata/processes':
+    summary: Create a Process Workflow Automation
+    description: Create a Process Workflow Automation
+    parameters:
+      - schema:
+          type: string
+        name: tenant_id
+        in: path
+        required: true
+        description: clientId of the tenant
+    post:
+      summary: This API is to create a process definition.
+      operationId: post-api-v2-tenants-tenant_id-metadata-processes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+              examples:
+                example-1:
+                  value: PROCESS_4aea3fb5-611a-462e-aa84-69a0f6cd6832
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/workflow'
+            examples:
+              example-1:
+                value:
+                  name: Sample Workflow
+                  createdDate: '2020-01-21T07:02:02+0000'
+                  createdBy: USR0000000273
+                  updatedDate: '2020-01-22T04:51:33+0000'
+                  updatedBy: USR0000000007
+                  description: ''
+                  enabled: false
+                  variables: []
+                  startEvents:
+                    - '@type': SignalStartEvent
+                      uniqueId: StartEvent_1pxu3q3
+                      name: 'null'
+                      formName: alert
+                      eventOperation: CREATED
+                      eventCondition: $currentState = "Critical"
+                  activities:
+                    - '@type': SendMessageTask
+                      uniqueId: Task_0eogjde
+                      name: Mail event
+                      entity: $StartEvent_1pxu3q3.alert
+                      async: false
+                      messageRecipients:
+                        ROSTER: ''
+                        USER: buser3
+                        USERGROUP: ''
+                      notificationTemplateRef: c2fa27a5-2ad7-4de6-ba44-947363b37f54
+                      notificationPriority: NORMAL
+                    - '@type': RestServiceTask
+                      uniqueId: Task_0t8lier
+                      name: Invoke integration
+                      entity: $StartEvent_1pxu3q3.alert
+                      async: false
+                      integrationRef: INTG-2418f51d-f2c9-41a9-9ef1-9d4f8c74b5eb
+                      integrationEventRef: INTG-EVENT-b59c3af5-77ef-4ca2-a0a6-6f2c4cc8d3a1
+                    - '@type': SendMessageTask
+                      uniqueId: Task_0t1v9n2
+                      name: Update mail
+                      entity: $StartEvent_1pxu3q3.alert
+                      async: false
+                      messageRecipients:
+                        ROSTER: ''
+                        USER: buser3
+                        USERGROUP: ''
+                      notificationTemplateRef: c2fa27a5-2ad7-4de6-ba44-947363b37f54
+                      notificationPriority: NORMAL
+                  gateways:
+                    - '@type': ExclusiveGateway
+                      uniqueId: ExclusiveGateway_1x5l54b
+                      name: 'null'
+                      defaultSequenceFlow: SequenceFlow_1tycyne
+                  sequenceFlows:
+                    - '@type': SequenceFlow
+                      uniqueId: SequenceFlow_17hco2p
+                      name: 'null'
+                      source: Task_0t8lier
+                      target: ExclusiveGateway_1x5l54b
+                    - '@type': SequenceFlow
+                      uniqueId: SequenceFlow_1rhs6kb
+                      name: 'null'
+                      source: Task_0t1v9n2
+                      target: EndEvent_1spnb7x
+                    - '@type': SequenceFlow
+                      uniqueId: SequenceFlow_08qvs1l
+                      name: '1'
+                      source: ExclusiveGateway_1x5l54b
+                      target: Task_0t1v9n2
+                      conditionExpression: $Task_0t8lier.priority = "High"
+                    - '@type': SequenceFlow
+                      uniqueId: SequenceFlow_1hszcv0
+                      name: 'null'
+                      source: Task_0eogjde
+                      target: EndEvent_0im2rr5
+                    - '@type': SequenceFlow
+                      uniqueId: SequenceFlow_0b2ikfc
+                      name: 'null'
+                      source: StartEvent_1pxu3q3
+                      target: Task_0t8lier
+                    - '@type': SequenceFlow
+                      uniqueId: SequenceFlow_1tycyne
+                      name: '2'
+                      source: ExclusiveGateway_1x5l54b
+                      target: Task_0eogjde
+                      conditionExpression: $Task_0t8lier.priority = "Low"
+                  endEvents:
+                    - '@type': EndEvent
+                      uniqueId: EndEvent_0im2rr5
+                      name: 'null'
+                    - '@type': EndEvent
+                      uniqueId: EndEvent_1spnb7x
+                      name: 'null'
+      tags:
+        - automation
+  '/api/v2/tenants/{tenant_id}/metadata/processes/{uniqueId}':
+    summary: Manage Process workflows
+    description: Get and Delete Process workflows
+    parameters:
+      - schema:
+          type: string
+        name: tenant_id
+        in: path
+        required: true
+        description: tenantId of the client
+      - schema:
+          type: string
+        name: uniqueId
+        in: path
+        required: true
+        description: Process unique identifier
+    delete:
+      summary: This API is to delete the process definition.
+      operationId: delete-api-v2-tenants-tenant_id-metadata-processes-uniqueId
+      responses:
+        '200':
+          description: OK
+      description: ''
+      tags:
+        - automation
+    get:
+      summary: This API retrieves the given process definition.
+      operationId: get-api-v2-tenants-tenant_id-metadata-processes-uniqueId
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/activeWorkflow'
+              examples:
+                example-1:
+                  value:
+                    name: HandleResourceCreation
+                    uniqueId: d7f85078-d922-4107-b18e-e698310145ec
+                    enabled: true
+                    permissions:
+                      - roleId: 'pepsi_cloud_role_id '
+                        permissionLevel: VIEW
+                    createdDate: '2018-10-08T11:49:21 0000'
+                    createdBy: Joe Bob
+                    updatedDate: '2018-11-01T11:49:21 0000'
+                    updatedBy: Sally Sue
+                    variables:
+                      - id: '400000001'
+                        name: REST Result
+                        dataType: STRING
+                        required: true
+                    inputs: []
+                    outputs: []
+                    startEvents:
+                      - '@type': SignalStartEvent
+                        uniqueId: m5b85078-d922-4107-b18e-7f98310145ec
+                        formName: resource
+                        eventOperation: CREATED
+                        eventCondition: $location.name = "San Jose"
+                      - '@type': TimerStartEvent
+                        uniqueId: i4385078-d922-4107-b18e-7f98310138wr
+                        timeInterval: 'R5/2019-07-01T13:00:00Z'
+                        repeatRule: F2M
+                    activities:
+                      - '@type': SendMessageTask
+                        uniqueId: l8c85078-d922-4107-b18e-7f98950145ec
+                        entity: $m5b85078-d922-4107-b18e-7f98310145ec.resource
+                        messageRecipients:
+                          USER: 'johnDoe, sallySue'
+                          USERGROUP: 'SR Approver Group, Shared Service Admins'
+                          ROSTER: '1st Shift Roster, Primary Escalation Contacts'
+                        notificationTemplateRef: ...
+                        notificationPriority: NORMAL
+                      - '@type': RestServiceTask
+                        uniqueId: o0j85078-d922-4107-b18e-7f98310189u1
+                        serviceRef: 875ed563-325d-49a3-b01d-9fae0ac88ue9
+                        entityType: RESOURCE
+                        entity: $m5b85078-d922-4107-b18e-7f98310145ec.resource
+                      - '@type': TimerIntermediateEvent
+                        uniqueId: 28r85078-d922-8707-b18e-7f98950149rk
+                        timeOrDuration: PT2H
+                    displayProps: ...
+      tags:
+        - automation
+  '/api/v2/tenants/{tenant_id}/metadata/processes/search':
+    summary: Search process workflows
+    description: Search process workflows
+    parameters:
+      - schema:
+          type: string
+        name: tenant_id
+        in: path
+        required: true
+        description: clientId of the tenant
+    get:
+      summary: This API can be used to search processes of a client.
+      operationId: get-api-v2-tenants-tenant_id-metadata-processes-search
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    totalResults: 1
+                    orderBy: createdTime
+                    pageNo: 1
+                    pageSize: 100
+                    totalPages: 1
+                    nextPage: false
+                    previousPageNo: 0
+                    descendingOrder: true
+                properties:
+                  totalResults:
+                    type: number
+                  orderBy:
+                    type: string
+                    minLength: 1
+                  pageNo:
+                    type: number
+                  pageSize:
+                    type: number
+                  totalPages:
+                    type: number
+                  nextPage:
+                    type: boolean
+                  previousPageNo:
+                    type: number
+                  descendingOrder:
+                    type: boolean
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/activeProcess'
+                required:
+                  - totalResults
+                  - orderBy
+                  - pageNo
+                  - pageSize
+                  - totalPages
+                  - nextPage
+                  - previousPageNo
+                  - descendingOrder
+              examples:
+                example-attributesToFetch:
+                  value:
+                    results:
+                      - name: HandleResourceCreation
+                        updatedDate: '2018-11-01T11:49:21 0000'
+                        updatedBy: Sally Sue
+                        startEvents:
+                          - '@type': SignalStartEvent
+                            uniqueId: m5b85078-d922-4107-b18e-7f98310145ec
+                            formName: resource
+                            eventOperation: CREATED
+                            eventCondition: $location.name = "San Jose"
+                          - '@type': TimerStartEvent
+                            uniqueId: i4385078-d922-4107-b18e-7f98310138wr
+                            timeInterval: 'R/2019-07-01T13:00:00Z'
+                            repeatRule: F1D
+                    totalResults: 1
+                    orderBy: createdTime
+                    pageNo: 1
+                    pageSize: 100
+                    totalPages: 1
+                    nextPage: false
+                    previousPageNo: 0
+                    descendingOrder: true
+                example-2:
+                  value:
+                    results:
+                      - name: HandleResourceCreation
+                        uniqueId: d7f85078-d922-4107-b18e-e698310145ec
+                        enabled: true
+                        permissions:
+                          - roleId: pepsi_cloud_role_id
+                            permissionLevel: VIEW
+                        createdDate: '2018-10-08T11:49:21 0000'
+                        createdBy: Joe Bob
+                        updatedDate: '2018-11-01T11:49:21 0000'
+                        updatedBy: Sally Sue
+                        variables:
+                          - id: '400000001'
+                            name: REST Result
+                            dataType: STRING
+                            required: true
+                        inputs: []
+                        outputs: []
+                        startEvents:
+                          - '@type': SignalStartEvent
+                            uniqueId: m5b85078-d922-4107-b18e-7f98310145ec
+                            formName: resource
+                            eventOperation: CREATED
+                            eventCondition: $location.name = "San Jose"
+                          - '@type': TimerStartEvent
+                            uniqueId: i4385078-d922-4107-b18e-7f98310138wr
+                            timeInterval: 'R/2019-07-01T13:00:00Z'
+                            repeatRule: F1D
+                        activities:
+                          - '@type': SendMessageTask
+                            uniqueId: l8c85078-d922-4107-b18e-7f98950145ec
+                            entity: $m5b85078-d922-4107-b18e-7f98310145ec.resource
+                            messageRecipients:
+                              Users: 'johnDoe, sallySue'
+                              Groups: 'SR Approver Group, Shared Service Admins'
+                              Rosters: '1st Shift Roster, Primary Escalation Contacts'
+                            notificationTemplateRef: ...
+                            notificationPriority: NORMAL
+                          - '@type': RestServiceTask
+                            uniqueId: o0j85078-d922-4107-b18e-7f98310189u1
+                            serviceRef: 875ed563-325d-49a3-b01d-9fae0ac88ue9
+                            entityType: RESOURCE
+                            entity: $m5b85078-d922-4107-b18e-7f98310145ec.resource
+                          - '@type': TimerIntermediateEvent
+                            uniqueId: 28r85078-d922-8707-b18e-7f98950149rk
+                            timeOrDuration: PT2H
+                    totalResults: 1
+                    orderBy: createdTime
+                    pageNo: 1
+                    pageSize: 100
+                    totalPages: 1
+                    nextPage: false
+                    previousPageNo: 0
+                    descendingOrder: true
+      description: ''
+      tags:
+        - automation
+  '/api/v2/tenants/{tenantId}/metadata/processes/processInstances/{processInstanceId}':
+    summary: Manage Process instances
+    description: Get and Delete Process instances
+    parameters:
+      - schema:
+          type: string
+        name: tenantId
+        in: path
+        required: true
+        description: clientId of the tenant
+      - schema:
+          type: string
+        name: processInstanceId
+        in: path
+        required: true
+        description: UUID of the process instance
+    get:
+      summary: This API retrieves the given process instance.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/processInstance'
+              examples:
+                example-1:
+                  value:
+                    id: 53db2698-a99e-11eb-bad2-5254003eb5f4
+                    processDefinitionId: PROCESS_f8d6c135-a33e-4458-a88f-fd541e766041
+                    processDefinitionName: Timer - daily
+                    processDefinitionVersion: 1
+                    deploymentId: 2fd6e58e-a740-11eb-b0d7-525400bf3044
+                    startTime: 1619778304000
+                    startEventId: StartEvent_1cw81lg
+                    tenantId: client_160
+                    state: ACTIVE
+                    diagram: ...
+                    activityInstances:
+                      - activityId: StartEvent_1cw81lg
+                        activityName: timer
+                        activityType: startTimerEvent
+                        startTime: 1619778304000
+                        endTime: 1619778304000
+                        durationInMillis: 5
+                        activityInstanceId: 'StartEvent_1cw81lg:53db74b9-a99e-11eb-bad2-5254003eb5f4'
+                        completeScope: false
+                        canceled: false
+                      - activityId: Task_1kj1ze4
+                        activityName: Task
+                        activityType: userTask
+                        startTime: 1619778304000
+                        activityResult: '{"task":"TASK0000199936"}'
+                        activityInstanceId: 'Task_1kj1ze4:53ea41cb-a99e-11eb-bad2-5254003eb5f4'
+                        completeScope: false
+                        canceled: false
+                    variables:
+                      - id: 54e14bfe-a99e-11eb-bad2-5254003eb5f4
+                        name: 53db2698-a99e-11eb-bad2-5254003eb5f4
+                        type: object
+                        value: '{task=TASK0000199936}'
+                    userTasks:
+                      - startTime: 1619778304000
+                        id: TASK0000199936
+                        name: Task
+                        description: User Task daily
+                        asigneeGroup: 5.5 Group
+                        completeScope: false
+                        canceled: false
+                    statistics:
+                      - id: Task_1kj1ze4
+                        instances: 1
+                    errors: []
+      operationId: get-api-v2-tenants-tenantId-metadata-processes-processInstances-processInstanceId
+      tags:
+        - automation
+    delete:
+      summary: This API cancels the given running process instanc
+      operationId: delete-api-v2-tenants-tenantId-metadata-processes-processInstances-processInstanceId
+      responses:
+        '200':
+          description: OK
+      description: ''
+      tags:
+        - automation
+  '/api/v2/tenants/{tenant_id}/metadata/processes/processInstances/search':
+    summary: Search Process instances
+    description: Search Process instances
+    parameters:
+      - schema:
+          type: string
+        name: tenant_id
+        in: path
+        required: true
+        description: clientId of the tentant
+    get:
+      summary: This API can be used to search process instances of a client.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    totalResults: 205
+                    orderBy: startTime
+                    pageNo: 1
+                    pageSize: 20
+                    totalPages: 11
+                    nextPage: true
+                    nextPageNo: 2
+                    previousPageNo: 0
+                    descendingOrder: true
+                properties:
+                  totalResults:
+                    type: number
+                  orderBy:
+                    type: string
+                    minLength: 1
+                  pageNo:
+                    type: number
+                  pageSize:
+                    type: number
+                  totalPages:
+                    type: number
+                  nextPage:
+                    type: boolean
+                  nextPageNo:
+                    type: number
+                  previousPageNo:
+                    type: number
+                  descendingOrder:
+                    type: boolean
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/activeProcessInstance'
+                required:
+                  - totalResults
+                  - orderBy
+                  - pageNo
+                  - pageSize
+                  - totalPages
+                  - nextPage
+                  - nextPageNo
+                  - previousPageNo
+                  - descendingOrder
+              examples:
+                example-1:
+                  value:
+                    results:
+                      - id: a2e3849f-3dfa-11eb-ad00-12d3805c3647
+                        processDefinitionId: PROCESS_d6d9c259-21f3-4018-b3c0-f19ccdc8a3d7
+                        processDefinitionName: up
+                        processDefinitionVersion: 1
+                        startTime: 1607943225000
+                        startEventId: StartEvent_14tu1x3
+                        startEventType: NONE
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: cb6ef8ee-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680870000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: cb5fddb8-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680870000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: cb555662-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680870000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: cb20ffeb-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680870000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: cab063bd-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680869000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: c6349f92-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680862000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: c5fc2a6a-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680861000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: c5da7192-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680861000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: c5d0fbad-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680861000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: c0cb951c-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680853000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: c07cffe6-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680852000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: be6f2e7c-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680849000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: be034d46-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680848000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: bdb49100-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680847000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: b96534f9-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680840000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: b9611644-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680840000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: b8434a27-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680838000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: b826c172-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680838000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                      - id: b81bebfd-3b97-11eb-9cb7-12d3805c3647
+                        processDefinitionId: PROCESS_2d0c96e1-0a78-454f-b888-713b10a22563
+                        processDefinitionName: alert actions
+                        processDefinitionVersion: 12
+                        startTime: 1607680838000
+                        startEventId: StartEvent_1krjkj1
+                        startEventType: SIGNAL
+                        tenantId: client_11
+                        state: ACTIVE
+                    totalResults: 205
+                    orderBy: startTime
+                    pageNo: 1
+                    pageSize: 20
+                    totalPages: 11
+                    nextPage: true
+                    nextPageNo: 2
+                    previousPageNo: 0
+                    descendingOrder: true
+      operationId: get-api-v2-tenants-tenant_id-metadata-processes-processInstances-search
+      tags:
+        - automation
+  '/api/v2/tenants/{tenant_id}/metadata/processes/{action}/{uniqueId}':
+    summary: Process actions
+    description: Process actions
+    parameters:
+      - schema:
+          type: string
+        name: tenant_id
+        in: path
+        required: true
+        description: clientId of the tenant
+      - schema:
+          type: string
+        name: action
+        in: path
+        required: true
+        description: action = deploy or start
+      - schema:
+          type: string
+        name: uniqueId
+        in: path
+        required: true
+        description: process uuid
+    post:
+      summary: Process actions
+      operationId: post-api-v2-tenants-tenant_id-metadata-processes-action-uniqueId
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              x-examples:
+                example-1:
+                  StartEvent_13p9zxn:
+                    alert: '959'
+                    eventType: CREATED
+              properties:
+                StartEvent_13p9zxn:
+                  type: object
+                  properties:
+                    alert:
+                      type: string
+                      minLength: 1
+                    eventType:
+                      type: string
+                      minLength: 1
+                    resource:
+                      type: string
+            examples:
+              example-1:
+                value:
+                  StartEvent_13p9zxn:
+                    alert: '959'
+                    eventType: CREATED
+              example-2:
+                value:
+                  StartEvent_13p9zxn:
+                    resource: 459d4958-01a4-464f-adf3-b00bbbb27b94
+                    eventType: CREATED
+              example-3:
+                value:
+                  StartEvent_13p9zxn:
+                    alert: '959'
+      tags:
+        - automation
+  '/v2/tenants/{tenant_id}/metadata/processes/externalTaskExecutionResult':
+    summary: Signal external task
+    description: Signal external task execution
+    parameters:
+      - schema:
+          type: string
+        name: tenant_id
+        in: path
+        required: true
+        description: clientId of the tenant
+    post:
+      summary: Signal process instances
+      operationId: post-v2-tenants-tenant_id-metadata-processes-externalTaskExecutionResult
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+              examples:
+                example-1:
+                  value: SUCCESS
+                example-2:
+                  value: FAILURE
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                executionId:
+                  type: string
+                  minLength: 1
+                status:
+                  type: string
+                  minLength: 1
+                taskExecutionResult:
+                  type: object
+                  properties:
+                    output:
+                      type: string
+                      minLength: 1
+                  required:
+                    - output
+              required:
+                - executionId
+                - status
+                - taskExecutionResult
+              x-examples:
+                example-1:
+                  executionId: ca02d58b-fc81-4b2b-8136-2a7cab564836
+                  status: SUCCESS
+                  taskExecutionResult:
+                    output: Agent Offline
+            examples:
+              example-1:
+                value:
+                  executionId: ca02d58b-fc81-4b2b-8136-2a7cab564836
+                  status: SUCCESS
+                  taskExecutionResult:
+                    output: Agent Offline
+      tags:
+        - automation
+components:
+  securitySchemes:
+    accessToken:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: 'https://{subdomain}.api.opsramp.com'
+          scopes: {}
+  parameters:
+    tenantId:
+      in: path
+      name: tenantId
+      schema:
+        type: string
+      required: true
+      description: Describes the client ID or msp ID of the tenant
+    jobId:
+      name: jobId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Job unique identifier
+    categoryId:
+      name: categoryId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Defined category id
+    scriptId:
+      name: scriptId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Given script id
+  schemas:
+    generalInfo:
+      title: generalInfo
+      type: object
+      properties:
+        ipAddresses:
+          type: string
+        hostName:
+          type: string
+        osName:
+          type: string
+        osBuildNumber:
+          type: string
+    resource:
+      title: resource
+      type: object
+      properties:
+        id:
+          type: string
+        generalInfo:
+          $ref: '#/components/schemas/generalInfo'
+        clientUniqueId:
+          type: string
+        type:
+          type: string
+    entities:
+      title: entities
+      type: array
+      items:
+        type: object
+        properties:
+          resource:
+            $ref: '#/components/schemas/resource'
+    pattern:
+      title: pattern
+      type: object
+      properties:
+        type:
+          type: string
+          description: Recurrence pattern type.
+          enum:
+            - daily
+            - weekly
+            - monthly
+            - never
+            - run once
+        frequency:
+          type: string
+          description: |
+            Days on which the schedule is applied. Frequency is dependent on recurrence pattern type. Example: Provide type as weekly, then frequency is the day on which the job is run.
+          enum:
+            - everyday
+            - every weekday
+            - recurrence
+        repeatType:
+          type: string
+          description: Run the job constantly on specific days.
+          enum:
+            - days
+        weekDays:
+          type: string
+          description: Days on which the job is run.
+          enum:
+            - Sunday
+            - Monday
+            - Tuesday
+            - Wednesday
+            - Thursday
+            - Saturday
+        dayOfMonth:
+          type: string
+          description: Day on which the job is scheduled to run every month. Days range between 1 to 31.
+          minLength: 1
+          maxLength: 31
+        weekIndex:
+          type: string
+          description: Week on which the job is run.
+          enum:
+            - First
+            - Second
+            - Third
+            - Fourth
+            - Last
+        dayOfIndex:
+          type: string
+          description: Day on which the job is scheduled to run.
+          enum:
+            - Sunday
+            - Monday
+            - Tuesday
+            - Wednesday
+            - Thursday
+            - Friday
+            - Saturday
+        repeatFrequency:
+          type: integer
+    schedule:
+      title: schedule
+      type: object
+      properties:
+        startDate:
+          type: string
+          format: date-time
+        pattern:
+          $ref: '#/components/schemas/pattern'
+    approvalType:
+      title: approvalType
+      type: object
+      description: Approval for the job type App Install
+      properties:
+        approvalType:
+          type: integer
+          description: |
+            Approval type required to install the app. Example: Provide 0 as approvalType which indicates app is manually installed.
+          minimum: 0
+          maximum: 1
+        approvalReason:
+          type: string
+          description: Reason for approval of installing app.
+        alertRequired:
+          type: boolean
+    customScript:
+      title: customScript
+      type: object
+      description: Script ID for the job type Custom Script
+      properties:
+        id:
+          type: string
+          description: Custom script ID.
+        name:
+          type: string
+        description:
+          type: string
+        platforms:
+          type: array
+          items:
+            type: string
+    configParams:
+      title: configParams
+      type: object
+      description: Parameters to configure for the job type Network Backup Configuration
+      properties:
+        versionsSaved:
+          type: string
+          enum:
+            - ALL_VERSIONS
+            - VERSION_WITH_CHANGES
+          description: Take Backup of versions saved.
+        backUpTrigger:
+          type: boolean
+          description: Perform a backup on the receipt of a configuration change SNMP Trap.
+        startupConfigAlert:
+          type: boolean
+          description: Generate alerts on changes to startup configuration.
+        runConfigAlert:
+          type: boolean
+          description: Generate alerts on changes to runtime configuration.
+        startUpConfigFilesBackUp:
+          type: boolean
+          description: Startup configuration file to be backed up.
+        runTimeConfigFilesBackUp:
+          type: boolean
+          description: Runtime configuration file to be backed up.
+    script:
+      title: script
+      type: object
+      properties:
+        jobType:
+          type: string
+          description: 'Job type. To view job types that OpsRamp supports, see Get Job Types API.'
+          enum:
+            - adCheckList
+            - networkconfigbackup
+            - appinstall
+            - custom
+        userType:
+          $ref: '#/components/schemas/userType'
+        configParams:
+          $ref: '#/components/schemas/configParams'
+        approvalType:
+          $ref: '#/components/schemas/approvalType'
+        customScript:
+          $ref: '#/components/schemas/customScript'
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/parameter'
+    parameter:
+      title: parameter
+      type: object
+      properties:
+        paramId:
+          type: string
+          description: (Optional) The parameter Id
+        value:
+          type: string
+        name:
+          type: string
+    userType:
+      title: userType
+      type: integer
+      minimum: 1
+      maximum: 2
+      description: |-
+        (Optional) The user type.
+        1- system user,
+        2- Other user
+    rba:
+      title: rba
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    rbaScriptParameter:
+      title: rbaScriptParameter
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of parameter.
+        description:
+          type: string
+          description: Description for parameter.
+        defaultValue:
+          type: string
+          description: Default Value for the parameter.
+        type:
+          type: string
+          description: Parameter is mandatory or optional.
+        dataType:
+          type: string
+          description: Data Type of the parameter.
+          enum:
+            - STRING
+            - INTEGER
+            - PASSWORD
+    rbaScript:
+      title: rbaScript
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        platforms:
+          type: array
+          items:
+            type: string
+        parameters:
+          $ref: '#/components/schemas/rbaScriptParameter'
+        executionType:
+          type: string
+        installTimeout:
+          type: integer
+        attachment:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            contentURL:
+              type: string
+        scriptVersion:
+          type: string
+        registryPath:
+          type: string
+        registryValue:
+          type: string
+        processName:
+          type: string
+        serviceName:
+          type: string
+    workflow:
+      description: ''
+      type: object
+      x-examples: {}
+      properties:
+        name:
+          type: string
+          minLength: 1
+        createdDate:
+          type: string
+          minLength: 1
+        createdBy:
+          type: string
+          minLength: 1
+        updatedDate:
+          type: string
+          minLength: 1
+        updatedBy:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        enabled:
+          type: boolean
+        variables:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              dataType:
+                type: string
+              required:
+                type: boolean
+        startEvents:
+          oneOf:
+            - type: array
+              items:
+                $ref: '#/components/schemas/workflowSigEvent'
+            - $ref: '#/components/schemas/workflowTimerEvent'
+        activities:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/msgTask'
+              - $ref: '#/components/schemas/restTask'
+        endEvents:
+          type: array
+          uniqueItems: true
+          minItems: 1
+          items:
+            type: object
+            properties:
+              '@type':
+                type: string
+                minLength: 1
+              uniqueId:
+                type: string
+                minLength: 1
+              name:
+                type: string
+                minLength: 1
+        gateways:
+          type: array
+          items:
+            $ref: '#/components/schemas/gateway'
+        sequenceFlows:
+          type: array
+          items:
+            $ref: '#/components/schemas/sequenceFlow'
+      required:
+        - startEvents
+        - activities
+        - gateways
+        - sequenceFlows
+    activeFlow:
+      description: ''
+      type: object
+      x-examples: {}
+      properties:
+        uniqueId:
+          type: string
+          minLength: 1
+        permissions:
+          type: array
+          uniqueItems: true
+          minItems: 1
+          items:
+            type: object
+            properties:
+              roleId:
+                type: string
+                minLength: 1
+              permissionLevel:
+                type: string
+                minLength: 1
+        inputs:
+          type: array
+          items:
+            type: string
+        outputs:
+          type: array
+          items:
+            type: string
+        displayProps:
+          type: string
+          minLength: 1
+    workflowSigEvent:
+      description: ''
+      type: object
+      properties:
+        '@type':
+          type: string
+          minLength: 1
+        uniqueId:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        formName:
+          type: string
+          minLength: 1
+        eventOperation:
+          type: string
+          minLength: 1
+        eventCondition:
+          type: string
+          minLength: 1
+      required:
+        - '@type'
+        - uniqueId
+        - name
+        - formName
+        - eventOperation
+        - eventCondition
+      x-examples:
+        example-1:
+          value:
+            '@type': string
+            uniqueId: string
+            name: string
+            formName: string
+            eventOperation: string
+            eventCondition: string
+      title: ''
+    workflowTimerEvent:
+      description: ''
+      type: object
+      properties:
+        '@type':
+          type: string
+          minLength: 1
+        uniqueId:
+          type: string
+          minLength: 1
+        timeInterval:
+          type: string
+          minLength: 1
+        repeatRule:
+          type: string
+          minLength: 1
+      required:
+        - '@type'
+        - uniqueId
+        - timeInterval
+        - repeatRule
+      x-examples:
+        example-1:
+          value:
+            '@type': string
+            uniqueId: string
+            timeInterval: string
+            repeatRule: string
+    sequenceFlow:
+      description: ''
+      type: object
+      x-examples:
+        example-1:
+          '@type': SequenceFlow
+          uniqueId: SequenceFlow_08qvs1l
+          name: '1'
+          source: ExclusiveGateway_1x5l54b
+          target: Task_0t1v9n2
+          conditionExpression: $Task_0t8lier.priority = "High"
+      properties:
+        '@type':
+          type: string
+          minLength: 1
+        uniqueId:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        source:
+          type: string
+          minLength: 1
+        target:
+          type: string
+          minLength: 1
+        conditionExpression:
+          type: string
+          minLength: 1
+      required:
+        - '@type'
+        - uniqueId
+        - name
+        - source
+        - target
+    endEvent:
+      description: ''
+      type: object
+      properties:
+        '@type':
+          type: string
+          minLength: 1
+        uniqueId:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+      required:
+        - '@type'
+        - uniqueId
+        - name
+      x-examples:
+        example-1:
+          '@type': EndEvent
+          uniqueId: EndEvent_0im2rr5
+          name: 'null'
+    gateway:
+      description: ''
+      type: object
+      properties:
+        '@type':
+          type: string
+          minLength: 1
+        uniqueId:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        defaultSequenceFlow:
+          type: string
+          minLength: 1
+      required:
+        - '@type'
+        - uniqueId
+        - name
+        - defaultSequenceFlow
+      x-examples:
+        example-1:
+          '@type': ExclusiveGateway
+          uniqueId: ExclusiveGateway_1x5l54b
+          name: 'null'
+          defaultSequenceFlow: SequenceFlow_1tycyne
+    processInstance:
+      description: ''
+      type: object
+      x-examples: {}
+      properties:
+        id:
+          type: string
+          minLength: 1
+        processDefinitionId:
+          type: string
+          minLength: 1
+        processDefinitionName:
+          type: string
+          minLength: 1
+        processDefinitionVersion:
+          type: number
+        deploymentId:
+          type: string
+          minLength: 1
+        startTime:
+          type: number
+        startEventId:
+          type: string
+          minLength: 1
+        tenantId:
+          type: string
+          minLength: 1
+        state:
+          type: string
+          minLength: 1
+        diagram:
+          type: string
+          minLength: 1
+        activityInstances:
+          type: array
+          items:
+            $ref: '#/components/schemas/activityInstance'
+        userTasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/userTask'
+        statistics:
+          type: array
+          items:
+            $ref: '#/components/schemas/statistic'
+        errors:
+          type: array
+          items:
+            type: string
+        variables:
+          type: array
+          items:
+            $ref: '#/components/schemas/variable'
+      required:
+        - id
+        - processDefinitionId
+        - processDefinitionName
+        - processDefinitionVersion
+        - deploymentId
+        - startTime
+        - startEventId
+        - tenantId
+        - state
+        - diagram
+      title: ''
+    msgTask:
+      description: ''
+      type: object
+      x-examples:
+        example-1:
+          '@type': SendMessageTask
+          uniqueId: Task_0eogjde
+          name: Mail event
+          entity: $StartEvent_1pxu3q3.alert
+          async: false
+          messageRecipients:
+            ROSTER: ''
+            USER: buser3
+            USERGROUP: ''
+          notificationTemplateRef: c2fa27a5-2ad7-4de6-ba44-947363b37f54
+          notificationPriority: NORMAL
+      properties:
+        '@type':
+          type: string
+          minLength: 1
+        uniqueId:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        entity:
+          type: string
+          minLength: 1
+        async:
+          type: boolean
+        messageRecipients:
+          type: object
+          properties:
+            ROSTER:
+              type: string
+            USER:
+              type: string
+              minLength: 1
+            USERGROUP:
+              type: string
+        notificationTemplateRef:
+          type: string
+          minLength: 1
+        notificationPriority:
+          type: string
+          minLength: 1
+    restTask:
+      description: ''
+      type: object
+      x-examples:
+        example-1:
+          '@type': RestServiceTask
+          uniqueId: Task_0t8lier
+          name: Invoke integration
+          entity: $StartEvent_1pxu3q3.alert
+          async: false
+          integrationRef: INTG-2418f51d-f2c9-41a9-9ef1-9d4f8c74b5eb
+          integrationEventRef: INTG-EVENT-b59c3af5-77ef-4ca2-a0a6-6f2c4cc8d3a1
+      properties:
+        '@type':
+          type: string
+          minLength: 1
+        uniqueId:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        entity:
+          type: string
+          minLength: 1
+        async:
+          type: boolean
+        integrationRef:
+          type: string
+          minLength: 1
+        integrationEventRef:
+          type: string
+          minLength: 1
+    permission:
+      description: ''
+      type: object
+      properties:
+        roleId:
+          type: string
+          minLength: 1
+        permissionLevel:
+          type: string
+          minLength: 1
+      required:
+        - roleId
+        - permissionLevel
+      x-examples:
+        example-1:
+          roleId: pepsi_cloud_role_id
+          permissionLevel: VIEW
+    activeWorkflow:
+      title: activeWorkflow
+      allOf:
+        - $ref: '#/components/schemas/workflow'
+        - $ref: '#/components/schemas/activeFlow'
+      x-examples:
+        example-1:
+          value:
+            name: string
+            createdDate: string
+            createdBy: string
+            updatedDate: string
+            updatedBy: string
+            description: string
+            enabled: true
+            variables:
+              - id: string
+                name: string
+                dataType: string
+                required: true
+            startEvents:
+              - '@type': string
+                uniqueId: string
+                name: string
+                formName: string
+                eventOperation: string
+                eventCondition: string
+            activities:
+              - '@type': string
+                uniqueId: string
+                name: string
+                entity: string
+                async: true
+                messageRecipients:
+                  ROSTER: string
+                  USER: string
+                  USERGROUP: string
+                notificationTemplateRef: string
+                notificationPriority: string
+            endEvents:
+              - '@type': string
+                uniqueId: string
+                name: string
+            gateways:
+              - '@type': string
+                uniqueId: string
+                name: string
+                defaultSequenceFlow: string
+            sequenceFlows:
+              - '@type': string
+                uniqueId: string
+                name: string
+                source: string
+                target: string
+                conditionExpression: string
+            uniqueId: string
+            permissions:
+              - roleId: string
+                permissionLevel: string
+            inputs:
+              - string
+            outputs:
+              - string
+            displayProps: string
+    activeProcess:
+      description: ''
+      type: object
+      x-examples: {}
+      properties:
+        name:
+          type: string
+          minLength: 1
+        updatedDate:
+          type: string
+          minLength: 1
+        updatedBy:
+          type: string
+          minLength: 1
+        startEvents:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/workflowSigEvent'
+              - $ref: '#/components/schemas/workflowTimerEvent'
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/permission'
+        inputs:
+          type: array
+          items:
+            type: string
+        outputs:
+          type: array
+          items:
+            type: string
+        activities:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/msgTask'
+              - $ref: '#/components/schemas/restTask'
+              - $ref: '#/components/schemas/timerIntmEvent'
+        variables:
+          type: array
+          items:
+            $ref: '#/components/schemas/variable'
+      required:
+        - name
+        - updatedDate
+        - updatedBy
+    timerIntmEvent:
+      description: ''
+      type: object
+      properties:
+        '@type':
+          type: string
+          minLength: 1
+        uniqueId:
+          type: string
+          minLength: 1
+        timeOrDuration:
+          type: string
+          minLength: 1
+      required:
+        - '@type'
+        - uniqueId
+        - timeOrDuration
+      x-examples:
+        example-1:
+          '@type': TimerIntermediateEvent
+          uniqueId: 28r85078-d922-8707-b18e-7f98950149rk
+          timeOrDuration: PT2H
+    userTask:
+      description: ''
+      type: object
+      properties:
+        startTime:
+          type: number
+        id:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+          minLength: 1
+        asigneeGroup:
+          type: string
+          minLength: 1
+        completeScope:
+          type: boolean
+        canceled:
+          type: boolean
+      required:
+        - startTime
+        - id
+        - name
+        - description
+        - asigneeGroup
+        - completeScope
+        - canceled
+      x-examples:
+        example-1:
+          startTime: 1619778304000
+          id: TASK0000199936
+          name: Task
+          description: User Task daily
+          asigneeGroup: 5.5 Group
+          completeScope: false
+          canceled: false
+    statistic:
+      description: ''
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+        instances:
+          type: number
+      required:
+        - id
+        - instances
+      x-examples:
+        example-1:
+          id: Task_1kj1ze4
+          instances: 1
+    activityInstance:
+      description: ''
+      type: object
+      x-examples: {}
+      properties:
+        activityId:
+          type: string
+          minLength: 1
+        activityName:
+          type: string
+          minLength: 1
+        activityType:
+          type: string
+          minLength: 1
+        startTime:
+          type: number
+        endTime:
+          type: number
+        durationInMillis:
+          type: number
+        completeScope:
+          type: boolean
+        activityInstanceId:
+          type: string
+          minLength: 1
+        canceled:
+          type: boolean
+      required:
+        - activityId
+        - activityName
+        - activityType
+        - startTime
+        - endTime
+        - durationInMillis
+        - completeScope
+        - activityInstanceId
+        - canceled
+    variable:
+      description: ''
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        type:
+          type: string
+          minLength: 1
+        value:
+          type: string
+          minLength: 1
+      required:
+        - id
+        - name
+        - type
+        - value
+      x-examples:
+        example-1:
+          id: 54e14bfe-a99e-11eb-bad2-5254003eb5f4
+          name: 53db2698-a99e-11eb-bad2-5254003eb5f4
+          type: object
+          value: '{task=TASK0000199936}'
+      title: variable
+    activeProcessInstance:
+      description: ''
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+        processDefinitionId:
+          type: string
+          minLength: 1
+        processDefinitionName:
+          type: string
+          minLength: 1
+        processDefinitionVersion:
+          type: number
+        startTime:
+          type: number
+        startEventId:
+          type: string
+          minLength: 1
+        startEventType:
+          type: string
+          minLength: 1
+        tenantId:
+          type: string
+          minLength: 1
+        state:
+          type: string
+          minLength: 1
+      required:
+        - id
+        - processDefinitionId
+        - processDefinitionName
+        - processDefinitionVersion
+        - startTime
+        - startEventId
+        - startEventType
+        - tenantId
+        - state
+      x-examples:
+        example-1:
+          id: a2e3849f-3dfa-11eb-ad00-12d3805c3647
+          processDefinitionId: PROCESS_d6d9c259-21f3-4018-b3c0-f19ccdc8a3d7
+          processDefinitionName: up
+          processDefinitionVersion: 1
+          startTime: 1607943225000
+          startEventId: StartEvent_14tu1x3
+          startEventType: NONE
+          tenantId: client_11
+          state: ACTIVE
