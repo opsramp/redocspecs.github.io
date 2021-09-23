@@ -1,0 +1,896 @@
+openapi: 3.0.0
+info:
+  title: GatewayAPIs
+  version: '3.0'
+  description: 'Gateway APIs  '
+  contact:
+    name: OpsRamp
+    url: OpsRamp.com
+    email: OpsAPI@opsRamp.com
+  termsOfService: www.Opsramp.com
+servers:
+  - url: 'https://gatewayIP:5480'
+    description: gateway-IP-Address
+paths:
+  /v2/gateway/services:
+    parameters: []
+    post:
+      summary: Configurable actions for gateways
+      operationId: configure-gateway-services
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serviceResponse'
+              examples:
+                success:
+                  value:
+                    status: ' Gateway Registered'
+                    success: Successfully done
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/serviceRequest'
+            examples:
+              restartAllservices:
+                value:
+                  service: all
+                  action: restart
+                  activation_token: string
+                  body:
+                    server: ops-GW
+              ntpService-manual:
+                value:
+                  service: ntpService
+                  action: manual
+                  activation_token: string
+                  body:
+                    time:
+                      date: string
+                      hour: string
+                      min: string
+                      sec: string
+                      timezone: string
+                    ntpServer:
+                      - 193.134.124.14
+                      - 193.135.124.14
+              synchronize:
+                value:
+                  service: ntpService
+                  action: sync
+                  activation_token: asde-efg-tyg
+                  body:
+                    ntpServer:
+                      - time-d-g.nist.gov
+                      - ime-a-wwv.nist.gov
+              start_squid:
+                value:
+                  service: squid
+                  action: start
+                  activation_token: asde-efg-tyg
+                  body:
+                    server: string
+              registration:
+                value:
+                  service: gateway
+                  action: register
+                  activation_token: asde-efg-tyg
+                  body:
+                    server: string
+              external-proxy:
+                value:
+                  service: externalProxy
+                  action: start
+                  activation_token: string
+                  body:
+                    connection: proxy
+                    proxy_ip: 172.xx.xxx.xxx
+                    proxy_port: '3128'
+                    proxy_pwd: xxx
+                    proxy_usr: xxx
+                    objectType: proxy
+              passwdChng:
+                value:
+                  service: gateway
+                  action: register
+                  activation_token: string
+                  body:
+                    newpasswd: Pass@12345
+                    oldpasswd: Pass@1234
+                    username: admin
+              network:
+                value:
+                  service: gateway
+                  action: register
+                  activation_token: string
+                  body:
+                    dhcp: 'False'
+                    dnsArray: xxx.xxx.0.1
+                    domainname: domain.com
+                    gateway: xxx.xxx.0.1
+                    hostname: localhost
+                    interface: enp0s3
+                    ipaddr: xxx.xxx.x.xxx
+                    subnet: 255.255.255.0
+              syslog:
+                value:
+                  service: syslog
+                  action: start
+                  activation_token: string
+                  body:
+                    port: '514'
+                    protocol: UDP
+                    receiver: 192.168.0.116
+                    selectors: '*.*'
+              static-routes:
+                value:
+                  service: staticRoutes
+                  action: start
+                  activation_token: string
+                  body:
+                    srouteGateway: 192.168.0.1
+                    srouteIP: 10.10.5.0
+                    srouteInterface: enp0s3
+                    srouteMetric: '0'
+                    srouteSubnet: 255.255.255.0
+      tags:
+        - OpsRamp Gateway APIs
+      description: 'Supported actions by gateway namely : register,start,stop,synchronize,manual'
+    get:
+      summary: Get gateway services configurations
+      operationId: get-v2-gateway-services
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/opsrampGateway'
+              examples:
+                gateway-config:
+                  value:
+                    generalInfo:
+                      applianceInformation:
+                        applianceFirmwareVersion: 9.0.0
+                        firmwareBuildTag: 9.0.0-b208-202105191005
+                        model: OGVMAU18
+                        registrationStatus: Registered
+                        tunnelStatus: Established
+                      networkInformation:
+                        defaultGateway: 172.25.0.1
+                        defaultInterface: ens160
+                        dhcp: Enabled
+                        dnsEntries: '8.8.8.8,8.8.4.4'
+                        domainName: domain.com
+                        hostName: localhost
+                        ipAddress: 172.25.252.149
+                        macAddress: '00:50:56:98:B5:8D'
+                        subnetMask: 255.255.0.0
+                    ntpInfo:
+                      ntpStatus: 'ON'
+                      servers: 216.239.35.4
+                      time: 'Wed May 19 22:35:09 AKDT 2021'
+                    servicesInfo:
+                      - name: vprobe
+                        status: Service VProbe is Active (Running..)
+                      - name: ntp
+                        status: Service NTP is Active (Running..)
+                      - name: postgresql
+                        status: Service Database is Active (Running..)
+                      - name: network
+                        status: Service Network is Active (Running..)
+                      - name: squid
+                        status: Service Squid Proxy is Active (Running..)
+                      - name: nginx
+                        status: Service Nginx  is Active (Running..)
+                    syslogInfoList:
+                      - syslogInfo:
+                          port: '514'
+                          protocol: udp
+                          receiver: 172.12.112.154
+                          selectors: '*.*'
+                      - syslogInfo:
+                          port: '514'
+                          protocol: udp
+                          receiver: 172.25.112.154
+                          selectors: '*.*'
+                    tzInfo:
+                      regionanlTimezoneInformation:
+                        ' (GMT) UTC': UTC
+                        ' (GMT+12:00) NewZealand ': Auckland
+                        ' (GMT+3:30) Iran ': Iran
+                        ' (GMT+8:00) Russia': Irkutsk
+                        ' (GMT-10:00) Hawaii': Hawaii
+                        ' (GMT-11:00) Midway I.,Samoa ': Samoa
+                        ' (GMT-4:00) Caracas, LaPaz  ': Caracas
+                        ' (GMT-9:30) Marquesas Is.': Marquesas
+                        '(GMT) Casablanca, Monrovia': Casablanca
+                        '(GMT) UK ': London
+                        '(GMT+10:00) Brisbane, Guam': Brisbane
+                        '(GMT+10:00) Papua New Guinea': Hobart
+                        '(GMT+10:00) Russia': Vladivostok
+                        '(GMT+10:00) Sydney, Melbourne': Sydney
+                        '(GMT+10:00) Tasmania': Tasmania
+                        '(GMT+10:30) LordHowe I.': 'Lord_Howe '
+                        '(GMT+11:00) Solomon Is., Magadan  ': Magadan
+                        '(GMT+11:30) Norfolk I.': Norfolk
+                        '(GMT+12:00) Fiji, Kamchatka, Marshall Is': Fiji
+                        '(GMT+12:00) Russia  ': Kamchatka
+                        '(GMT+1:00) Europe ': Amsterdam
+                        '(GMT+2:00) Egypt, Finland, Romania, Greece': Cairo
+                        '(GMT+2:00) Israel ': Israel
+                        '(GMT+2:00) Jordan': Jerusalem
+                        '(GMT+3:00) Iraq, Syria': Baghdad
+                        '(GMT+3:00) Moscow': Moscow
+                        '(GMT+3:00) Turkey ': Turkey
+                        '(GMT+4:00) Armenia, Azerbaijan': Muscat
+                        '(GMT+4:30) Afghanistan': Kabul
+                        '(GMT+5:00) Pakistan': Karachi
+                        '(GMT+5:00) Russia': Yekaterinburg
+                        '(GMT+5:30) India, Kolkata': Kolkata
+                        '(GMT+6:00) Bangladesh ': Dhaka
+                        '(GMT+6:00) Russia': Almaty
+                        '(GMT+6:30) Burma': Rangoon
+                        '(GMT+7:00) Russia': Krasnoyarsk
+                        '(GMT+7:00) Thailand, Cambodia, Laos': Bangkok
+                        '(GMT+8:00) China, Mongolia, Indonesia, Philippines, Australia': Hong_Kong
+                        '(GMT+9:00) Russia ': Yakutsk
+                        '(GMT+9:00) Tokyo, Korea': Tokyo
+                        '(GMT+9:30) Adelaide ': Adelaide
+                        '(GMT+9:30) Darwin': Darwin
+                        '(GMT-12:00) Eniwetok, Kwajalein': Kwajalein
+                        '(GMT-1:00) Azores, CapeVerde Is.': Azores
+                        '(GMT-3:00) BuenosAires, Georgetown': Buenos_Aires
+                        '(GMT-3:30) Newfoundland': Newfoundland
+                        '(GMT-4:00) Atlantic Time (US & Canada)': Atlantic
+                        '(GMT-5:00) Bogota, Lima, Quito': Bogota
+                        '(GMT-5:00) EasternTime (US & Canada) ': Eastern
+                        '(GMT-5:00) Indiana (East)': Indianapolis
+                        '(GMT-6:00) Central Time(US & Canada)': Central
+                        '(GMT-6:00) MexicoCity, Tegucigalpa': Mexico_City
+                        '(GMT-7:00) Arizona': Arizona
+                        '(GMT-7:00) Mountain Time (US & Canada)': Mountain
+                        '(GMT-8:00) Pacific Time (US & Canada)': Pacific
+                        '(GMT-8:30) Pitcairn Is. ': Pitcairn
+                        '(GMT-9:00) Alaska  ': Alaska
+                gateway:
+                  value:
+                    generalInfo:
+                      applianceInformation:
+                        applianceFirmwareVersion: 9.0.0
+                        firmwareBuildTag: 9.0.0-b208-202105191005
+                        model: OGVMAU18
+                        registrationStatus: Not Registered
+                        tunnelStatus: Not Established
+                      networkInformation:
+                        defaultGateway: 172.25.0.1
+                        defaultInterface: ens160
+                        dhcp: Enabled
+                        dnsEntries: '8.8.8.8,8.8.4.4'
+                        domainName: domain.com
+                        hostName: host
+                        ipAddress: xxx.xx.xxx.xxx
+                        macAddress: '00:50:56:98:B5:8D'
+                        subnetMask: 255.255.0.0
+                ntp:
+                  value:
+                    ntpInfo:
+                      ntpStatus: 'ON'
+                      servers: '216.239.35.4,45.32.199.189'
+                      time: 'Thu May 20 05:09:42 UTC 2021'
+                routes:
+                  value:
+                    routesInfo:
+                      srouteGateway: 172.125.0.0
+                      srouteIP: 172.125.18.116
+                      srouteInterface: enp0sX
+                      srouteMetric: '0'
+                      srouteSubnet: 255.255.0.0
+                gateway-services:
+                  value:
+                    servicesInfo:
+                      - name: vprobe
+                        status: Service VProbe is inactive (not Running..)
+                      - name: ntp
+                        status: Service NTP is Active (Running..)
+                      - name: postgresql
+                        status: Service Database is inactive (not Running..)
+                      - name: network
+                        status: Service Network is Active (Running..)
+                      - name: squid
+                        status: Service Squid Proxy is inactive (not Running..)
+                      - name: nginx
+                        status: Service Nginx  is Active (Running..)
+                syslog:
+                  value:
+                    syslogInfoList:
+                      - syslogInfo:
+                          port: '514'
+                          protocol: udp
+                          receiver: 172.25.0.1
+                          selectors: '*.*'
+                      - syslogInfo:
+                          port: '514'
+                          protocol: udp
+                          receiver: 172.25.1.1
+                          selectors: '*.*'
+                registry:
+                  value:
+                    registry:
+                      appServer: opsServ
+                      expires_in: '3599.987177'
+                      token: 73a55e4a91bce97a4a99fb16a3c42409a1668612
+      description: Get the details of the deployed gateway services
+      tags:
+        - OpsRamp Gateway APIs
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: serviceType
+          description: 'registry,ntp,timeZone,services,routes,syslog'
+  /v2/gateway/auth/token:
+    post:
+      summary: Gets the auth token
+      operationId: post-v2-gateway-auth-token
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  expires_in:
+                    type: string
+                    minLength: 1
+                  token:
+                    type: string
+                    minLength: 1
+                  success:
+                    type: string
+                    minLength: 1
+                required:
+                  - expires_in
+                  - token
+                  - success
+              examples:
+                auth-token:
+                  value:
+                    expires_in: string
+                    token: string
+                    success: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                login:
+                  type: object
+                  properties:
+                    username:
+                      type: string
+                      minLength: 1
+                    password:
+                      type: string
+                      minLength: 1
+                  required:
+                    - username
+                    - password
+              required:
+                - login
+            examples:
+              user-credentials:
+                value:
+                  login:
+                    username: string
+                    password: string
+        description: gateway auth credentials
+      parameters: []
+      description: Get the token for authentication.
+      tags:
+        - OpsRamp Gateway APIs
+components:
+  schemas:
+    opsrampGateway:
+      type: object
+      title: OpsRamp-gateway
+      description: Gateway object schema
+      x-examples:
+        timezonals:
+          apiTokenGen:
+            expires_in: string
+            token: string
+          services:
+            - name: string
+              status: string
+          timeZone:
+            - (GMT) UK: London
+          ntpServer:
+            time: string
+            servers:
+              - string
+            ntpStatus: true
+          staticroute:
+            srouteGateway: string
+            srouteIP: string
+            srouteMetric: string
+            srouteSubnet: string
+          externalProxy:
+            connection: string
+            proxy_ip: string
+            proxy_port: string
+            proxy_pwd: string
+            proxy_usr: string
+          networkSettings:
+            domainname: string
+            gateway: string
+            hostname: string
+            interface: string
+            ipaddr: string
+            staticIp: string
+            subnet: string
+          generalinfo:
+            applianceInfo:
+              firmwareBuildTag: string
+              model: string
+              registered: true
+              tunnerStatus: string
+            networkInfo:
+              dhcp: string
+              dnsEntries: string
+              defaultGateway: string
+              defaultInterface: string
+              domainName: string
+              hostName: string
+              ipAddrs: string
+              macAddr: string
+              subnetMask: string
+          registry:
+            token: string
+            appServer: string
+        services:
+          services:
+            - name: string
+              status: string
+        authToken:
+          apiTokenGen:
+            expires_in: string
+            token: string
+        static_routes:
+          staticroute:
+            srouteGateway: string
+            srouteIP: string
+            srouteMetric: string
+            srouteSubnet: string
+        networkSetting:
+          networkSettings:
+            domainname: string
+            gateway: string
+            hostname: string
+            interface: string
+            ipaddr: string
+            staticIp: string
+            subnet: string
+        genericInfo:
+          generalinfo:
+            applianceInfo:
+              firmwareBuildTag: string
+              model: string
+              registered: true
+              tunnerStatus: string
+        networkInfo:
+          networkInfo:
+            dhcp: string
+            dnsEntries: string
+            defaultGateway: string
+            defaultInterface: string
+            domainName: string
+            hostName: string
+            ipAddrs: string
+            macAddr: string
+            subnetMask: string
+      properties:
+        services:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              status:
+                type: string
+        timeZone:
+          type: array
+          items:
+            type: object
+            properties:
+              tzs:
+                type: string
+        ntpServer:
+          type: object
+          format: email
+          properties:
+            time:
+              type: string
+            servers:
+              type: array
+              items:
+                type: string
+            ntpStatus:
+              type: boolean
+        staticroute:
+          type: object
+          properties:
+            srouteGateway:
+              type: string
+            srouteIP:
+              type: string
+            srouteMetric:
+              type: string
+            srouteSubnet:
+              type: string
+        externalProxy:
+          type: object
+          description: Set to true if the user's email has been verified.
+          properties:
+            connection:
+              type: string
+            proxy_ip:
+              type: string
+            proxy_port:
+              type: string
+            proxy_pwd:
+              type: string
+            proxy_usr:
+              type: string
+        networkSettings:
+          type: object
+          format: date
+          description: The date that the user was created.
+          properties:
+            domainname:
+              type: string
+            gateway:
+              type: string
+            hostname:
+              type: string
+            interface:
+              type: string
+            ipaddr:
+              type: string
+            staticIp:
+              type: string
+            subnet:
+              type: string
+        generalinfo:
+          type: object
+          properties:
+            applianceInfo:
+              type: object
+              properties:
+                firmwareBuildTag:
+                  type: string
+                model:
+                  type: string
+                registered:
+                  type: boolean
+                tunnerStatus:
+                  type: string
+            networkInfo:
+              type: object
+              properties:
+                dhcp:
+                  type: string
+                dnsEntries:
+                  type: string
+                defaultGateway:
+                  type: string
+                defaultInterface:
+                  type: string
+                domainName:
+                  type: string
+                hostName:
+                  type: string
+                ipAddrs:
+                  type: string
+                macAddr:
+                  type: string
+                subnetMask:
+                  type: string
+        registry:
+          type: object
+          properties:
+            token:
+              type: string
+            appServer:
+              type: string
+            expires_in:
+              type: string
+      readOnly: true
+    messageResponse:
+      title: messageResponse
+      type: object
+      description: acionable response payloads
+      x-examples:
+        example-1:
+          expires_in: string
+          token: string
+          success: string
+      properties:
+        success:
+          type: string
+        failure:
+          type: string
+    serviceRequest:
+      type: object
+      description: ''
+      x-examples: {}
+      additionalProperties: false
+      properties:
+        service:
+          type: string
+          minLength: 1
+          enum:
+            - gateway
+            - externalProxy
+            - syslog
+            - staticRoutes
+            - passwdChange
+            - networkService
+            - nginx
+            - all
+            - ntp
+            - squid
+            - appServices
+            - network
+            - ntpService
+        action:
+          type: string
+          minLength: 1
+          enum:
+            - register
+            - sync
+            - restart
+            - start
+            - stop
+            - add
+            - remove
+            - update
+            - reset
+            - manual
+        activation_token:
+          type: string
+        body:
+          oneOf:
+            - $ref: '#/components/schemas/registerService'
+            - $ref: '#/components/schemas/externalProxyService'
+            - $ref: '#/components/schemas/ntpService'
+            - $ref: '#/components/schemas/syslogService'
+            - $ref: '#/components/schemas/staticRoutesService'
+            - $ref: '#/components/schemas/networkService'
+            - $ref: '#/components/schemas/passwdService'
+      required:
+        - service
+        - action
+    serviceResponse:
+      type: object
+      description: ''
+      x-examples:
+        example-1:
+          uuid: e3ure-ee2e3
+          status: pending
+          data:
+            items: []
+          count: 2
+          next: efefee-ee2e3
+      properties:
+        uuid:
+          type: string
+          minLength: 1
+        status:
+          type: string
+          minLength: 1
+        data:
+          oneOf:
+            - $ref: '#/components/schemas/messageResponse'
+        count:
+          type: number
+        next:
+          type: string
+          minLength: 1
+      required:
+        - status
+    registerService:
+      type: object
+      description: ''
+      x-examples: {}
+      additionalProperties: false
+      properties:
+        server:
+          type: string
+          minLength: 1
+    syslogService:
+      type: object
+      description: ''
+      x-examples:
+        example-1:
+          port: '514'
+          protocol: UDP
+          receiver: 192.168.0.116
+          selectors: '*.*'
+      additionalProperties: false
+      properties:
+        port:
+          type: string
+          minLength: 1
+        protocol:
+          type: string
+          minLength: 1
+        receiver:
+          type: string
+          minLength: 1
+        selectors:
+          type: string
+          minLength: 1
+    staticRoutesService:
+      type: object
+      description: ''
+      x-examples:
+        example-1:
+          srouteGateway: 192.168.0.1
+          srouteIP: 10.10.5.0
+          srouteInterface: enp0s3
+          srouteMetric: '0'
+          srouteSubnet: 255.255.255.0
+      additionalProperties: false
+      properties:
+        srouteGateway:
+          type: string
+          minLength: 1
+        srouteIP:
+          type: string
+          minLength: 1
+        srouteInterface:
+          type: string
+          minLength: 1
+        srouteMetric:
+          type: string
+          minLength: 1
+        srouteSubnet:
+          type: string
+          minLength: 1
+    externalProxyService:
+      type: object
+      description: ''
+      x-examples: {}
+      additionalProperties: false
+      properties:
+        connection:
+          type: string
+          minLength: 1
+        proxy_ip:
+          type: string
+          minLength: 1
+        proxy_port:
+          type: string
+          minLength: 1
+        proxy_pwd:
+          type: string
+          minLength: 1
+        proxy_usr:
+          type: string
+          minLength: 1
+        objectType:
+          type: string
+      required:
+        - objectType
+    passwdService:
+      type: object
+      description: ''
+      x-examples: {}
+      additionalProperties: false
+      properties:
+        newpasswd:
+          type: string
+          minLength: 1
+        oldpasswd:
+          type: string
+          minLength: 1
+        username:
+          type: string
+          minLength: 1
+      required:
+        - newpasswd
+        - oldpasswd
+        - username
+    networkService:
+      type: object
+      description: ''
+      x-examples:
+        example-1:
+          dhcp: 'False'
+          dnsArray: xxx.xxx.0.1
+          domainname: domain.com
+          gateway: xxx.xxx.0.1
+          hostname: localhost
+          interface: enp0s3
+          ipaddr: xxx.xxx.x.xxx
+          subnet: 255.255.255.0
+      additionalProperties: false
+      properties:
+        dhcp:
+          type: string
+          minLength: 1
+        dnsArray:
+          type: string
+          minLength: 1
+        domainname:
+          type: string
+          minLength: 1
+        gateway:
+          type: string
+          minLength: 1
+        hostname:
+          type: string
+          minLength: 1
+        interface:
+          type: string
+          minLength: 1
+        ipaddr:
+          type: string
+          minLength: 1
+        subnet:
+          type: string
+          minLength: 1
+    ntpService:
+      type: object
+      description: ''
+      x-examples: {}
+      title: ntpService
+      additionalProperties: false
+      properties:
+        time:
+          $ref: '#/components/schemas/time'
+        ntpServer:
+          type: array
+          items:
+            type: string
+    time:
+      description: ''
+      type: object
+      x-examples:
+        example-1:
+          date: string
+          hour: string
+          min: string
+          sec: string
+          timezone: string
+      properties:
+        date:
+          type: string
+          minLength: 1
+        hour:
+          type: string
+          minLength: 1
+        min:
+          type: string
+          minLength: 1
+        sec:
+          type: string
+          minLength: 1
+        timezone:
+          type: string
+          minLength: 1
+  securitySchemes:
+    token:
+      type: http
+      scheme: bearer
+tags:
+  - name: OpsRamp Gateway APIs
