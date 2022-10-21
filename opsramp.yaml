@@ -1,0 +1,3014 @@
+openapi: 3.0.0
+info:
+  title: OpsQL
+  version: 2.0.0
+  description: Query Language API Documentation
+  contact:
+    name: OpsRamp Support
+    email: support@opsramp.com
+    url: 'https://www.opsramp.com/about-opsramp/contact-us/'
+servers:
+  - url: 'https://api.opsramp.com'
+    description: Partner - All Others
+  - url: 'https://{subdomain}.api.opsramp.com'
+    description: Partner or Client custom branded sub-domain
+    variables:
+      subdomain:
+        default: demo
+        description: Custom sub-domain assigned to the client
+paths:
+  '/opsql/api/v3/tenants/{tenantId}/queries':
+    x-new-path: true
+    x-internal: true
+    summary: queries
+    description: Post a Query.Configure and post the query for the required entities.
+    post:
+      description: Execute the query defined by the payload
+      summary: OpsQL based queried data from the platform. For details on OpsQL please refer `https://docs.opsramp.com/platform-features/feature-guides/query-language-reference/query-language-ref/`
+      operationId: ql_queries
+      tags:
+        - ql
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/querymodel'
+            examples:
+              example-query-alerts:
+                value:
+                  objectType: alert
+                  fields:
+                    - id
+                    - type
+                    - os
+                    - ipAddress
+                    - alert.currentState
+                    - alert.updatedTime
+                  filterCriteria: type = 'server' AND state = 'managed' AND alert.status = 'Open'
+              example-query-alert:
+                value:
+                  objectType: alert
+                  filterCriteria: status = 'Open' AND resource.group.name = 'group-abc'
+              example-query-resource-groupBy:
+                value:
+                  objectType: resource
+                  groupBy:
+                    - availability.state
+                  aggregateFunction: count
+              example-query-resource-by-custom-attribute:
+                value:
+                  objectType: resource
+                  fields:
+                    - id
+                    - name
+                    - type
+                  filterCriteria: tags.departmentCode = '0ABC12'
+              example-query-resource-in-relationships:
+                value:
+                  objectType: resource
+                  filterCriteria: 'topology.relation = connects and entityType = RESOURCE and id =''0c0eccaf-3df8-4270-a3be-04f352001b7d'' '
+                  fields:
+                    - entityType
+                    - id
+                    - name
+                    - type
+                    - internalId
+                    - targetResource.type
+                    - targetResource.name
+                    - targetResource.internalId
+                    - topology.relation
+                    - targetResource.ipAddress
+                    - targetResource.id
+                  pageNo: 1
+                  pageSize: 100
+              example-query-resource-out-relationships:
+                value:
+                  objectType: resource
+                  filterCriteria: 'topology.relation = connects and entityType = RESOURCE and id =''0c0eccaf-3df8-4270-a3be-04f352001b7d'' '
+                  fields:
+                    - entityType
+                    - id
+                    - name
+                    - type
+                    - internalId
+                    - targetResource.type
+                    - targetResource.name
+                    - targetResource.internalId
+                    - topology.relation
+                    - targetResource.ipAddress
+                    - targetResource.id
+                  pageNo: 1
+                  pageSize: 100
+              example-query-by-appInstances:
+                value:
+                  objectType: resource
+                  fields:
+                    - id
+                    - name
+                    - type
+                    - ipAddress
+                    - appInstance.id
+                    - appInstance.name
+                  filterCriteria: appInstance.name = 'app-abc'
+              example-query-audit-log:
+                value:
+                  objectType: audit
+                  filterCriteria: dataChanges.property = 'country'
+                  fields:
+                    - spId
+                    - partnerId
+                    - clientId
+                    - spName
+                    - partnerName
+                    - clientName
+                    - objectId
+                    - objectName
+                    - objectType
+                    - dataChanges
+                  sortBy: activityTime
+                  pageNo: 1
+                  pageSize: 100
+              example-query-by-resource-attributes:
+                value:
+                  objectType: resource
+                  fields:
+                    - id
+                    - name
+                    - type
+                  filterCriteria: resourceGrp.name = '0ABC12' AND Os = `Linux`
+                  sortBy: name
+                  pageNo: 0
+                  pageSize: 0
+              example-default-fields:
+                value:
+                  objectType: resource
+                  filterCriteria: resourceName in ('prod-server')
+              example-resource-all-fields:
+                value:
+                  objectType: resource
+                  fields:
+                    - id
+                    - name
+                    - type
+                    - aliasName
+                    - resourceName
+                    - hostName
+                    - make
+                    - model
+                    - ipAddress
+                    - alternateIpAddress
+                    - os
+                    - serialNumber
+                    - clientId
+                    - partnerId
+                    - entityType
+                    - nativeType
+                    - dnsName
+                    - moId
+                    - internalId
+                    - state
+                    - macAddress
+                    - agentInstalled
+                    - monitorable
+                    - tags
+                    - timezone
+                    - osType
+                  filterCriteria: availability.state = 'up'
+              example-resource-ostype:
+                value:
+                  objectType: resource
+                  filterCriteria: osType = 'linux'
+              example-resource-timezone:
+                value:
+                  objectType: resource
+                  filterCriteria: timezone = 360
+              example-query-like-expression:
+                value:
+                  objectType: alert
+                  fields:
+                    - id
+                    - type
+                    - os
+                    - ipAddress
+                    - alert.currentState
+                    - alert.updatedTime
+                  filterCriteria: subject  LIKE 'cpu utilization is 90'
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+        description: Query request
+      responses:
+        '200':
+          $ref: '#/components/responses/queryresult'
+      x-internal: true
+    parameters:
+      - $ref: '#/components/parameters/tenantId'
+components:
+  securitySchemes:
+    accessToken:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: 'https://subdomain.api.opsramp.com'
+          scopes: {}
+  parameters:
+    tenantId:
+      in: path
+      name: tenantId
+      schema:
+        type: string
+      description: Describes clientId of the tenant
+      required: true
+  schemas:
+    querymodel:
+      type: object
+      description: ''
+      title: ''
+      additionalProperties: false
+      properties:
+        objectType:
+          type: string
+          minLength: 1
+          description: Query the category type
+          enum:
+            - resource
+            - alert
+            - incident
+            - audit
+          example: resource
+        fields:
+          type: array
+          description: The list of fields as required when query matches the filter.
+          items:
+            type: string
+        filterCriteria:
+          type: string
+          minLength: 1
+          description: |-
+            Describes the string defining all the patterns supported by OpsQL. The filter criteria of the query is create by the supported operators and attribute values.
+            For details on how to create query for OpsQL please refer `https://docs.opsramp.com/platform-features/feature-guides/query-language-reference/query-language-ref/`
+          x-more-information-url: https://docs.opsramp.com/platform-features/feature-guides/query-language-reference/query-language-ref/
+          x-more-information-title: See "opsql-overview" guide
+        aggregateFunction:
+          type: string
+          description: The supported aggregate function.
+          enum:
+            - count
+            - max
+            - min
+            - avg
+        groupBy:
+          type: array
+          description: Groups the data based on the given fields.
+          items:
+            type: string
+        sortBy:
+          type: string
+          description: Sorting the resultset based on the field.
+        pageNo:
+          type: number
+          description: Resultset page no.
+        pageSize:
+          type: number
+          description: Data size in each resultset page.
+      required:
+        - objectType
+      readOnly: true
+    entitymodel:
+      x-examples: {}
+      anyOf:
+        - $ref: '#/components/schemas/paginatedResources'
+        - $ref: '#/components/schemas/paginatedAlerts'
+        - $ref: '#/components/schemas/auditlogmodel'
+      title: ''
+    alertmodel:
+      type: array
+      description: ''
+      minItems: 1
+      uniqueItems: false
+      x-examples: {}
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            minLength: 1
+          subject:
+            type: string
+            minLength: 1
+          metric:
+            type: string
+            minLength: 1
+          objectId:
+            type: string
+            minLength: 1
+          objectName:
+            type: string
+            minLength: 1
+          objectType:
+            type: string
+            minLength: 1
+          ipAddress:
+            type: string
+            minLength: 1
+          currentState:
+            type: string
+            minLength: 1
+          status:
+            type: string
+            minLength: 1
+        required:
+          - id
+          - subject
+          - metric
+          - objectId
+          - objectName
+          - objectType
+          - ipAddress
+          - currentState
+          - status
+    resourcemodel:
+      type: array
+      description: ''
+      minItems: 1
+      uniqueItems: true
+      items:
+        type: object
+        required:
+          - id
+          - state
+          - moId
+          - type
+          - name
+          - aliasName
+          - dnsName
+          - ipAddress
+          - alternateIpAddress
+          - macAddress
+          - os
+          - make
+          - model
+          - serialNumber
+        properties:
+          id:
+            type: string
+            minLength: 1
+          state:
+            type: string
+            minLength: 1
+          moId:
+            type: string
+            minLength: 1
+          type:
+            type: string
+            minLength: 1
+          name:
+            type: string
+            minLength: 1
+          aliasName:
+            type: string
+            minLength: 1
+          dnsName:
+            type: string
+            minLength: 1
+          ipAddress:
+            type: string
+            minLength: 1
+          alternateIpAddress:
+            type: string
+            minLength: 1
+          macAddress:
+            type: string
+            minLength: 1
+          os:
+            type: string
+            minLength: 1
+          make:
+            type: string
+            minLength: 1
+          model:
+            type: string
+            minLength: 1
+          serialNumber:
+            type: string
+            minLength: 1
+      x-examples: {}
+    auditlogmodel:
+      type: object
+      description: ''
+      x-examples: {}
+      additionalProperties: false
+      properties:
+        results:
+          type: array
+          uniqueItems: true
+          minItems: 1
+          items:
+            type: object
+            properties:
+              action:
+                type: string
+                minLength: 1
+              activityTime:
+                type: number
+              clientId:
+                type: string
+                minLength: 1
+              description:
+                type: string
+                minLength: 1
+              objectId:
+                type: number
+              objectName:
+                type: string
+                minLength: 1
+              partnerId:
+                type: string
+                minLength: 1
+              spId:
+                type: string
+                minLength: 1
+              userId:
+                type: string
+                minLength: 1
+              spName:
+                type: string
+                minLength: 1
+              partnerName:
+                type: string
+                minLength: 1
+              clientName:
+                type: string
+                minLength: 1
+              userName:
+                type: string
+                minLength: 1
+              objectType:
+                type: string
+                minLength: 1
+              dataChanges:
+                type: array
+                uniqueItems: true
+                minItems: 1
+                items:
+                  type: object
+                  properties:
+                    new:
+                      type: string
+                      minLength: 1
+                    old:
+                      type: string
+                      minLength: 1
+                    property:
+                      type: string
+                      minLength: 1
+                  required:
+                    - new
+                    - old
+                    - property
+            required:
+              - action
+              - activityTime
+              - clientId
+              - description
+              - objectId
+              - objectName
+              - partnerId
+              - spId
+              - userId
+              - spName
+              - partnerName
+              - clientName
+              - userName
+              - objectType
+        pageNo:
+          type: number
+        pageSize:
+          type: number
+        nextPage:
+          type: boolean
+        orderBy:
+          type: string
+          minLength: 1
+        descendingOrder:
+          type: boolean
+      readOnly: true
+    paginatedResources:
+      type: object
+      x-examples: {}
+      additionalProperties: false
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/resource'
+        pageNo:
+          type: integer
+        pageSize:
+          type: integer
+        nextPage:
+          type: boolean
+        descendingOrder:
+          type: boolean
+      readOnly: true
+    paginatedAlerts:
+      type: object
+      x-examples: {}
+      additionalProperties: false
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/alert'
+        pageNo:
+          type: integer
+        pageSize:
+          type: integer
+        nextPage:
+          type: boolean
+        descendingOrder:
+          type: boolean
+      readOnly: true
+    alert:
+      type: object
+      properties:
+        id:
+          type: string
+        subject:
+          type: string
+        metric:
+          type: string
+        objectId:
+          type: string
+        objectName:
+          type: string
+        objectType:
+          type: string
+        ipAddress:
+          type: string
+        currentState:
+          type: string
+        status:
+          type: string
+    resource:
+      type: object
+      x-examples: {}
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          example: server
+        aliasName:
+          type: string
+        resourceName:
+          type: string
+        hostName:
+          type: string
+        make:
+          type: string
+        model:
+          type: string
+        ipAddress:
+          type: string
+          example: 'null'
+        alternateIpAddress:
+          type: string
+        os:
+          type: string
+        serialNumber:
+          type: string
+        clientId:
+          type: string
+        partnerId:
+          type: string
+        entityType:
+          type: string
+        nativeType:
+          type: string
+        dnsName:
+          type: string
+        moId:
+          type: string
+        internalId:
+          type: integer
+        state:
+          type: string
+        macAddress:
+          type: string
+        agentInstalled:
+          type: boolean
+        monitorable:
+          type: boolean
+        tags:
+          type: array
+          items:
+            type: object
+        timezone:
+          type: string
+        osType:
+          type: string
+      required:
+        - id
+        - name
+        - type
+  responses:
+    queryresult:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/entitymodel'
+          examples:
+            example-query-resource:
+              value:
+                results:
+                  - id: ff787390-0f3e-482f-9d11-b595b31f3f25
+                    name: test
+                    type: server
+                    aliasName: test
+                    resourceName: prod-server
+                    hostName: host10
+                    make: dell
+                    model: 1-233
+                    ipAddress: 12.2.2.2
+                    alternateIpAddress: null
+                    os: '12.0'
+                    serialNumber: '122343'
+                  - id: c6e4ea98-a9f1-42f9-95cd-7ed4b44f269b
+                    state: managed
+                    moId: 3f7eddac2fdd0442ac29035dc4802d8902d761d3420f3a13c1272248c94b03a0
+                    type: server
+                    name: res-GwDKpXz3YnHcrXEz22P2cP
+                    aliasName: res-GwDKpXz3YnHcrXEz22P2cP-alias
+                    dnsName: res-GwDKpXz3YnHcrXEz22P2cP.subdomain.domain.com
+                    ipAddress: 10.0.0.59
+                    alternateIpAddress: 172.0.0.213
+                    macAddress: 'aa:aa:22:33:00:77'
+                    os: Ubuntu 20.04 LTS
+                    make: 'Dell, Inc.'
+                    model: Model-A
+                    serialNumber: '18491'
+                  - id: 6703ed4e-88f7-4191-8aa0-23ac09aad055
+                    state: managed
+                    moId: 7e145fa3f46d8e3e32146ea7f4a31354068497426cd680548a5afbe9bceb9806
+                    type: server
+                    name: res-k2SwfpDG22SwNFYAcdjmaT
+                    aliasName: res-k2SwfpDG22SwNFYAcdjmaT-alias
+                    dnsName: res-k2SwfpDG22SwNFYAcdjmaT.subdomain.domain.com
+                    ipAddress: 10.0.0.66
+                    alternateIpAddress: 172.0.0.228
+                    macAddress: '22:44:99:cc:aa:00'
+                    os: Ubuntu 20.04 LTS
+                    make: Azure
+                    model: Model-B
+                    serialNumber: '14701'
+                pageNo: 1
+                pageSize: 100
+                nextPage: false
+                descendingOrder: false
+            example-query-alert:
+              value:
+                results:
+                  - id: ff787390-0f3e-482f-9d11-b595b31f3f25
+                    subject: server down
+                    name: prod-server
+                    type: server
+                    metric: ping
+                    objectId: ee88e5bb-1242-4a6c-a9a0-2389447144b3
+                    objectName: resource-abc
+                    objectType: Server
+                    ipAddress: 172.25.40.1
+                    currentState: Critical
+                    status: Open
+                  - id: ff787390-0f3e-482f-9d11-b595b31f3f25
+                    subject: snmp request timeout on 000C2923548D
+                    metric: generic metric
+                    name: prod-server
+                    type: server
+                    objectId: 0570dd0a-782f-432c-b9e8-10bdd7a6d3cb
+                    objectName: resource-def
+                    objectType: Server
+                    ipAddress: 172.25.50.1
+                    currentState: Critical
+                    status: Open
+                pageNo: 1
+                pageSize: 100
+                nextPage: false
+                descendingOrder: false
+            example-query-auditLog:
+              value:
+                results:
+                  - action: UPDATE
+                    activityTime: 1635494408731
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2393'
+                        old: '2392'
+                        property: version
+                      - new: '2021-10-29T08:00:08+0000'
+                        old: '2021-10-29T01:59:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635494492064
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '322'
+                        old: '321'
+                        property: version
+                      - new: '2021-10-29T08:01:32+0000'
+                        old: '2021-10-29T02:01:00+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635504788111
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1642'
+                        old: '1641'
+                        property: version
+                      - new: '2021-10-29T10:53:08+0000'
+                        old: '2021-10-29T04:52:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635505433105
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3002'
+                        old: '3001'
+                        property: version
+                      - new: '2021-10-29T11:03:53+0000'
+                        old: '2021-10-29T05:02:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635505433106
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3007'
+                        old: '3006'
+                        property: version
+                      - new: '2021-10-29T11:03:53+0000'
+                        old: '2021-10-29T05:02:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635510076097
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1643'
+                        old: '1642'
+                        property: version
+                      - new: 10.32.2.14
+                        old: 10.32.11.149
+                        property: ipAddress
+                      - new: '2021-10-29T12:21:16+0000'
+                        old: '2021-10-29T10:53:08+0000'
+                        property: modifiedTime
+                      - new: alpine 3.14.2
+                        old: alpine 3.14.0
+                        property: osName
+                      - new: '{"deployment":"cloud","containerEngineType":"Docker","metricAnalysisTags":"{\"cluster_name\":\"Prodmon-K8s\",\"provider\":\"GOOGLE\",\"Name\":\"Prodmon-K8s\",\"os\":\"alpine 3.14.2\",\"IP Address\":\"10.32.2.14\",\"mac_address\":\"f6:43:57:c7:f4:c5\",\"make\":\"Google\\n\",\"model\":\"Google Compute Engine\\n\",\"bios_code\":\"kube-INTG-61f75f2a-bea7-4a67-8b1b-a08da53ac34d\"}"}'
+                        old: '{"deployment":"cloud","containerEngineType":"Docker","metricAnalysisTags":"{\"cluster_name\":\"Prodmon-K8s\",\"provider\":\"GOOGLE\",\"Name\":\"Prodmon-K8s\",\"os\":\"alpine 3.14.0\",\"IP Address\":\"10.32.11.149\",\"mac_address\":\"7e:13:06:39:44:f6\",\"make\":\"Google\\n\",\"model\":\"Google Compute Engine\\n\",\"bios_code\":\"kube-INTG-61f75f2a-bea7-4a67-8b1b-a08da53ac34d\"}"}'
+                        property: resProps
+                      - new: opsramp-agent-master-778c9dc4dd-6tzz6
+                        old: opsramp-agent-master-778c9dc4dd-g4d4j
+                        property: dnsName
+                      - new: 'f6:43:57:c7:f4:c5'
+                        old: '7e:13:06:39:44:f6'
+                        property: macAddress
+                      - new: GoogleCloud-56BB4519EBACA2FCCBEF1822F7AC8364
+                        old: GoogleCloud-82B121C226A525774039994C205AFE34
+                        property: serialNumber
+                  - action: UPDATE
+                    activityTime: 1635510076792
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1644'
+                        old: '1643'
+                        property: version
+                      - new: Google
+                        old: |
+                          Google
+                        property: make
+                      - new: Google Compute Engine
+                        old: |
+                          Google Compute Engine
+                        property: model
+                      - new: '2021-10-29T12:21:16+0000'
+                        old: '2021-10-29T12:21:16+0000'
+                        property: modifiedTime
+                      - new: x86_64
+                        old: |
+                          x86_64
+                        property: osArch
+                      - new: '{"deployment":"cloud","containerEngineType":"Docker","metricAnalysisTags":"{\"cluster_name\":\"Prodmon-K8s\",\"provider\":\"GOOGLE\",\"Name\":\"Prodmon-K8s\",\"os\":\"alpine 3.14.2\",\"IP Address\":\"10.32.2.14\",\"mac_address\":\"f6:43:57:c7:f4:c5\",\"make\":\"Google\",\"model\":\"Google Compute Engine\",\"bios_code\":\"kube-INTG-61f75f2a-bea7-4a67-8b1b-a08da53ac34d\"}"}'
+                        old: '{"deployment":"cloud","containerEngineType":"Docker","metricAnalysisTags":"{\"cluster_name\":\"Prodmon-K8s\",\"provider\":\"GOOGLE\",\"Name\":\"Prodmon-K8s\",\"os\":\"alpine 3.14.2\",\"IP Address\":\"10.32.2.14\",\"mac_address\":\"f6:43:57:c7:f4:c5\",\"make\":\"Google\\n\",\"model\":\"Google Compute Engine\\n\",\"bios_code\":\"kube-INTG-61f75f2a-bea7-4a67-8b1b-a08da53ac34d\"}"}'
+                        property: resProps
+                      - new: Google
+                        old: |
+                          Google
+                        property: biosName
+                      - new: '5.4.0-1049-gke #52~18.04.1-Ubuntu SMP Thu Jul 15 19:25:00 UTC 2021 x86_64'
+                        old: |
+                          5.4.0-1042-gke #44~18.04.1-Ubuntu SMP Tue Apr 13 22:32:53 UTC 2021 x86_64
+                        property: description
+                      - new: Google
+                        old: |
+                          Google
+                        property: systemCaption
+                  - action: UPDATE
+                    activityTime: 1635516068782
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2394'
+                        old: '2393'
+                        property: version
+                      - new: '2021-10-29T14:01:08+0000'
+                        old: '2021-10-29T08:00:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635516152083
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '323'
+                        old: '322'
+                        property: version
+                      - new: '2021-10-29T14:02:32+0000'
+                        old: '2021-10-29T08:01:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635527093092
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3003'
+                        old: '3002'
+                        property: version
+                      - new: '2021-10-29T17:04:53+0000'
+                        old: '2021-10-29T11:03:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635527093111
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3008'
+                        old: '3007'
+                        property: version
+                      - new: '2021-10-29T17:04:53+0000'
+                        old: '2021-10-29T11:03:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635531735071
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1645'
+                        old: '1644'
+                        property: version
+                      - new: '2021-10-29T18:22:15+0000'
+                        old: '2021-10-29T12:21:17+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635537728085
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2395'
+                        old: '2394'
+                        property: version
+                      - new: '2021-10-29T20:02:08+0000'
+                        old: '2021-10-29T14:01:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635537812072
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '324'
+                        old: '323'
+                        property: version
+                      - new: '2021-10-29T20:03:32+0000'
+                        old: '2021-10-29T14:02:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635548753100
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3004'
+                        old: '3003'
+                        property: version
+                      - new: '2021-10-29T23:05:53+0000'
+                        old: '2021-10-29T17:04:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635548753110
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3009'
+                        old: '3008'
+                        property: version
+                      - new: '2021-10-29T23:05:53+0000'
+                        old: '2021-10-29T17:04:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635553395063
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1646'
+                        old: '1645'
+                        property: version
+                      - new: '2021-10-30T00:23:15+0000'
+                        old: '2021-10-29T18:22:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635559388084
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2396'
+                        old: '2395'
+                        property: version
+                      - new: '2021-10-30T02:03:08+0000'
+                        old: '2021-10-29T20:02:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635559472078
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '325'
+                        old: '324'
+                        property: version
+                      - new: '2021-10-30T02:04:32+0000'
+                        old: '2021-10-29T20:03:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635570413107
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3005'
+                        old: '3004'
+                        property: version
+                      - new: '2021-10-30T05:06:53+0000'
+                        old: '2021-10-29T23:05:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635570413137
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3010'
+                        old: '3009'
+                        property: version
+                      - new: '2021-10-30T05:06:53+0000'
+                        old: '2021-10-29T23:05:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635575055067
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1647'
+                        old: '1646'
+                        property: version
+                      - new: '2021-10-30T06:24:15+0000'
+                        old: '2021-10-30T00:23:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635581048245
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2397'
+                        old: '2396'
+                        property: version
+                      - new: '2021-10-30T08:04:08+0000'
+                        old: '2021-10-30T02:03:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635581132068
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '326'
+                        old: '325'
+                        property: version
+                      - new: '2021-10-30T08:05:32+0000'
+                        old: '2021-10-30T02:04:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635592073080
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3011'
+                        old: '3010'
+                        property: version
+                      - new: '2021-10-30T11:07:53+0000'
+                        old: '2021-10-30T05:06:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635592073088
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3006'
+                        old: '3005'
+                        property: version
+                      - new: '2021-10-30T11:07:53+0000'
+                        old: '2021-10-30T05:06:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635596715060
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1648'
+                        old: '1647'
+                        property: version
+                      - new: '2021-10-30T12:25:15+0000'
+                        old: '2021-10-30T06:24:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635602708089
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2398'
+                        old: '2397'
+                        property: version
+                      - new: '2021-10-30T14:05:08+0000'
+                        old: '2021-10-30T08:04:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635602792086
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '327'
+                        old: '326'
+                        property: version
+                      - new: '2021-10-30T14:06:32+0000'
+                        old: '2021-10-30T08:05:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635613733195
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3007'
+                        old: '3006'
+                        property: version
+                      - new: '2021-10-30T17:08:53+0000'
+                        old: '2021-10-30T11:07:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635613733204
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3012'
+                        old: '3011'
+                        property: version
+                      - new: '2021-10-30T17:08:53+0000'
+                        old: '2021-10-30T11:07:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635618375077
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1649'
+                        old: '1648'
+                        property: version
+                      - new: '2021-10-30T18:26:15+0000'
+                        old: '2021-10-30T12:25:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635624368245
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2399'
+                        old: '2398'
+                        property: version
+                      - new: '2021-10-30T20:06:08+0000'
+                        old: '2021-10-30T14:05:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635624452066
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '328'
+                        old: '327'
+                        property: version
+                      - new: '2021-10-30T20:07:32+0000'
+                        old: '2021-10-30T14:06:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635635393084
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3008'
+                        old: '3007'
+                        property: version
+                      - new: '2021-10-30T23:09:53+0000'
+                        old: '2021-10-30T17:08:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635635393086
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3013'
+                        old: '3012'
+                        property: version
+                      - new: '2021-10-30T23:09:53+0000'
+                        old: '2021-10-30T17:08:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635640035109
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1650'
+                        old: '1649'
+                        property: version
+                      - new: '2021-10-31T00:27:15+0000'
+                        old: '2021-10-30T18:26:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635646028084
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2400'
+                        old: '2399'
+                        property: version
+                      - new: '2021-10-31T02:07:08+0000'
+                        old: '2021-10-30T20:06:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635646112070
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '329'
+                        old: '328'
+                        property: version
+                      - new: '2021-10-31T02:08:32+0000'
+                        old: '2021-10-30T20:07:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635657053076
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3009'
+                        old: '3008'
+                        property: version
+                      - new: '2021-10-31T05:10:53+0000'
+                        old: '2021-10-30T23:09:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635657053082
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3014'
+                        old: '3013'
+                        property: version
+                      - new: '2021-10-31T05:10:53+0000'
+                        old: '2021-10-30T23:09:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635661695239
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1651'
+                        old: '1650'
+                        property: version
+                      - new: '2021-10-31T06:28:15+0000'
+                        old: '2021-10-31T00:27:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635667688083
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2401'
+                        old: '2400'
+                        property: version
+                      - new: '2021-10-31T08:08:08+0000'
+                        old: '2021-10-31T02:07:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635667772069
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '330'
+                        old: '329'
+                        property: version
+                      - new: '2021-10-31T08:09:32+0000'
+                        old: '2021-10-31T02:08:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635678713077
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3010'
+                        old: '3009'
+                        property: version
+                      - new: '2021-10-31T11:11:53+0000'
+                        old: '2021-10-31T05:10:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635678713078
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3015'
+                        old: '3014'
+                        property: version
+                      - new: '2021-10-31T11:11:53+0000'
+                        old: '2021-10-31T05:10:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635683355252
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1652'
+                        old: '1651'
+                        property: version
+                      - new: '2021-10-31T12:29:15+0000'
+                        old: '2021-10-31T06:28:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635689348133
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2402'
+                        old: '2401'
+                        property: version
+                      - new: '2021-10-31T14:09:08+0000'
+                        old: '2021-10-31T08:08:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635689432075
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '331'
+                        old: '330'
+                        property: version
+                      - new: '2021-10-31T14:10:32+0000'
+                        old: '2021-10-31T08:09:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635700373083
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3016'
+                        old: '3015'
+                        property: version
+                      - new: '2021-10-31T17:12:53+0000'
+                        old: '2021-10-31T11:11:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635700373101
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3011'
+                        old: '3010'
+                        property: version
+                      - new: '2021-10-31T17:12:53+0000'
+                        old: '2021-10-31T11:11:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635705015089
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1653'
+                        old: '1652'
+                        property: version
+                      - new: '2021-10-31T18:30:15+0000'
+                        old: '2021-10-31T12:29:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635711008116
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2403'
+                        old: '2402'
+                        property: version
+                      - new: '2021-10-31T20:10:08+0000'
+                        old: '2021-10-31T14:09:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635711092064
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '332'
+                        old: '331'
+                        property: version
+                      - new: '2021-10-31T20:11:32+0000'
+                        old: '2021-10-31T14:10:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635722033082
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3012'
+                        old: '3011'
+                        property: version
+                      - new: '2021-10-31T23:13:53+0000'
+                        old: '2021-10-31T17:12:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635722033112
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3017'
+                        old: '3016'
+                        property: version
+                      - new: '2021-10-31T23:13:53+0000'
+                        old: '2021-10-31T17:12:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635726675069
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1654'
+                        old: '1653'
+                        property: version
+                      - new: '2021-11-01T00:31:15+0000'
+                        old: '2021-10-31T18:30:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635732668087
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2404'
+                        old: '2403'
+                        property: version
+                      - new: '2021-11-01T02:11:08+0000'
+                        old: '2021-10-31T20:10:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635732752105
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '333'
+                        old: '332'
+                        property: version
+                      - new: '2021-11-01T02:12:32+0000'
+                        old: '2021-10-31T20:11:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635743693161
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3018'
+                        old: '3017'
+                        property: version
+                      - new: '2021-11-01T05:14:53+0000'
+                        old: '2021-10-31T23:13:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635743693166
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3013'
+                        old: '3012'
+                        property: version
+                      - new: '2021-11-01T05:14:53+0000'
+                        old: '2021-10-31T23:13:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635748335073
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1655'
+                        old: '1654'
+                        property: version
+                      - new: '2021-11-01T06:32:15+0000'
+                        old: '2021-11-01T00:31:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635754328101
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2405'
+                        old: '2404'
+                        property: version
+                      - new: '2021-11-01T08:12:08+0000'
+                        old: '2021-11-01T02:11:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635754412066
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '334'
+                        old: '333'
+                        property: version
+                      - new: '2021-11-01T08:13:32+0000'
+                        old: '2021-11-01T02:12:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635765353089
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3019'
+                        old: '3018'
+                        property: version
+                      - new: '2021-11-01T11:15:53+0000'
+                        old: '2021-11-01T05:14:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635765353095
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3014'
+                        old: '3013'
+                        property: version
+                      - new: '2021-11-01T11:15:53+0000'
+                        old: '2021-11-01T05:14:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635769995059
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1656'
+                        old: '1655'
+                        property: version
+                      - new: '2021-11-01T12:33:15+0000'
+                        old: '2021-11-01T06:32:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635775988084
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2406'
+                        old: '2405'
+                        property: version
+                      - new: '2021-11-01T14:13:08+0000'
+                        old: '2021-11-01T08:12:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635776072062
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '335'
+                        old: '334'
+                        property: version
+                      - new: '2021-11-01T14:14:32+0000'
+                        old: '2021-11-01T08:13:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635787013087
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3020'
+                        old: '3019'
+                        property: version
+                      - new: '2021-11-01T17:16:53+0000'
+                        old: '2021-11-01T11:15:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635787013088
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3015'
+                        old: '3014'
+                        property: version
+                      - new: '2021-11-01T17:16:53+0000'
+                        old: '2021-11-01T11:15:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635791655060
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1657'
+                        old: '1656'
+                        property: version
+                      - new: '2021-11-01T18:34:15+0000'
+                        old: '2021-11-01T12:33:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635797648085
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2407'
+                        old: '2406'
+                        property: version
+                      - new: '2021-11-01T20:14:08+0000'
+                        old: '2021-11-01T14:13:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635797732133
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '336'
+                        old: '335'
+                        property: version
+                      - new: '2021-11-01T20:15:32+0000'
+                        old: '2021-11-01T14:14:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635808673080
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3021'
+                        old: '3020'
+                        property: version
+                      - new: '2021-11-01T23:17:53+0000'
+                        old: '2021-11-01T17:16:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635808673092
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3016'
+                        old: '3015'
+                        property: version
+                      - new: '2021-11-01T23:17:53+0000'
+                        old: '2021-11-01T17:16:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635813315059
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: service-provider
+                    partnerName: provider
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1658'
+                        old: '1657'
+                        property: version
+                      - new: '2021-11-02T00:35:15+0000'
+                        old: '2021-11-01T18:34:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635819308094
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2408'
+                        old: '2407'
+                        property: version
+                      - new: '2021-11-02T02:15:08+0000'
+                        old: '2021-11-01T20:14:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635819392070
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '337'
+                        old: '336'
+                        property: version
+                      - new: '2021-11-02T02:16:32+0000'
+                        old: '2021-11-01T20:15:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635830333082
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3022'
+                        old: '3021'
+                        property: version
+                      - new: '2021-11-02T05:18:53+0000'
+                        old: '2021-11-01T23:17:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635830333083
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3017'
+                        old: '3016'
+                        property: version
+                      - new: '2021-11-02T05:18:53+0000'
+                        old: '2021-11-01T23:17:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635834975071
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1659'
+                        old: '1658'
+                        property: version
+                      - new: '2021-11-02T06:36:15+0000'
+                        old: '2021-11-02T00:35:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635840968085
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2409'
+                        old: '2408'
+                        property: version
+                      - new: '2021-11-02T08:16:08+0000'
+                        old: '2021-11-02T02:15:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635841052066
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '338'
+                        old: '337'
+                        property: version
+                      - new: '2021-11-02T08:17:32+0000'
+                        old: '2021-11-02T02:16:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635851993085
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3023'
+                        old: '3022'
+                        property: version
+                      - new: '2021-11-02T11:19:53+0000'
+                        old: '2021-11-02T05:18:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635851993118
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3018'
+                        old: '3017'
+                        property: version
+                      - new: '2021-11-02T11:19:53+0000'
+                        old: '2021-11-02T05:18:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635856635079
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1660'
+                        old: '1659'
+                        property: version
+                      - new: '2021-11-02T12:37:15+0000'
+                        old: '2021-11-02T06:36:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635862628156
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2410'
+                        old: '2409'
+                        property: version
+                      - new: '2021-11-02T14:17:08+0000'
+                        old: '2021-11-02T08:16:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635862712084
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '339'
+                        old: '338'
+                        property: version
+                      - new: '2021-11-02T14:18:32+0000'
+                        old: '2021-11-02T08:17:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635873653086
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3019'
+                        old: '3018'
+                        property: version
+                      - new: '2021-11-02T17:20:53+0000'
+                        old: '2021-11-02T11:19:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635873653128
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3024'
+                        old: '3023'
+                        property: version
+                      - new: '2021-11-02T17:20:53+0000'
+                        old: '2021-11-02T11:19:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635878295063
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1661'
+                        old: '1660'
+                        property: version
+                      - new: '2021-11-02T18:38:15+0000'
+                        old: '2021-11-02T12:37:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635884288098
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2411'
+                        old: '2410'
+                        property: version
+                      - new: '2021-11-02T20:18:08+0000'
+                        old: '2021-11-02T14:17:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635884372098
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '340'
+                        old: '339'
+                        property: version
+                      - new: '2021-11-02T20:19:32+0000'
+                        old: '2021-11-02T14:18:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635895313088
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94678
+                    objectName: prodmon-opsrep01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3025'
+                        old: '3024'
+                        property: version
+                      - new: '2021-11-02T23:21:53+0000'
+                        old: '2021-11-02T17:20:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635895313099
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3020'
+                        old: '3019'
+                        property: version
+                      - new: '2021-11-02T23:21:53+0000'
+                        old: '2021-11-02T17:20:53+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635899955059
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 277053
+                    objectName: Prodmon-K8s
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '1662'
+                        old: '1661'
+                        property: version
+                      - new: '2021-11-03T00:39:15+0000'
+                        old: '2021-11-02T18:38:15+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635905948092
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 138473
+                    objectName: db-queries-output
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '2412'
+                        old: '2411'
+                        property: version
+                      - new: '2021-11-03T02:19:08+0000'
+                        old: '2021-11-02T20:18:08+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635906032070
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 1383728
+                    objectName: prodmon-ent-gcp-clamav01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '341'
+                        old: '340'
+                        property: version
+                      - new: '2021-11-03T02:20:32+0000'
+                        old: '2021-11-02T20:19:32+0000'
+                        property: modifiedTime
+                  - action: UPDATE
+                    activityTime: 1635916973080
+                    clientId: ebeb272a-9708-2fd9-05af-45b75ebbeb5f
+                    description: Resource Updated
+                    objectId: 94683
+                    objectName: prodmon-opsrep-db01
+                    partnerId: 23ab15ef-ff64-d2f3-cf1d-de02a28f34a9
+                    spId: 4bb63257-f772-27aa-5c13-262887daae3e
+                    userId: USR0000000003
+                    spName: NetEnrich
+                    partnerName: Vistara
+                    clientName: Prodmon
+                    userName: opsramp_system_user
+                    objectType: Resource
+                    dataChanges:
+                      - new: '3021'
+                        old: '3020'
+                        property: version
+                      - new: '2021-11-03T05:22:53+0000'
+                        old: '2021-11-02T23:21:53+0000'
+                        property: modifiedTime
+                pageNo: 1
+                pageSize: 100
+                nextPage: true
+                orderBy: activityTime
+                descendingOrder: false
+            example-default-fields:
+              value:
+                results:
+                  - id: ff787390-0f3e-482f-9d11-b595b31f3f25
+                    name: prod-server
+                    type: Server
+                pageNo: 1
+                pageSize: 1
+                nextPage: false
+                descendingOrder: false
+            example-all-fields:
+              value:
+                results:
+                  - id: ff787390-0f3e-482f-9d11-b595b31f3f25
+                    name: hostname
+                    type: server
+                    aliasName: alias-host
+                    resourceName: device
+                    hostName: host-101
+                    make: make-1
+                    model: model-1
+                    ipAddress: 10.12.12.121
+                    alternateIpAddress: 10.12.12.122
+                    os: windows
+                    serialNumber: 123-134-244
+                    clientId: client_88
+                    partnerId: msp_83
+                    entityType: RESOURCE
+                    nativeType: resource
+                    dnsName: test.com
+                    moId: b595f78739f7873923f25
+                    internalId: 4647643
+                    state: active
+                    macAddress: '00:00:5e:00:53:af'
+                    agentInstalled: false
+                    monitorable: true
+                    tags:
+                      - tag1
+                    timezone: india/kolkata
+                    osType: Windows
+                pageNo: 0
+                pageSize: 0
+                nextPage: true
+                descendingOrder: true
+            example-query-resource-in-relationships:
+              value:
+                results:
+                  - entityType: resource
+                    id: 0c0eccaf-3df8-4270-a3be-04f352001b7d
+                    name: teoindf
+                    type: Desktop
+                    internalId: 35
+                    targetResource.type: Android
+                    targetResource.name: nsvdsub
+                    targetResource.internalId: 36
+                    topology.relation: connects
+                    topology.ipAddress: 2.4.67.7
+                    topology.id: a2a257d2-8461-4b77-887a-47d3963d4cbb
+                  - entityType: resource
+                    id: a2a257d2-8461-4b77-887a-47d3963d4cbb
+                    name: nsvdsub
+                    type: Android
+                    internalId: 36
+                    targetResource.type: Linux
+                    targetResource.name: test
+                    targetResource.internalId: 37
+                    topology.relation: connects
+                    topology.ipAddress: 5.9.7.9
+                    topology.id: af96498d-d880-4a4b-9587-e3e0a33c4f90
+                  - entityType: resource
+                    id: deafe38e-61fd-45cc-ab50-d7cc6b1d5b8e
+                    name: tedf
+                    type: Linux
+                    internalId: 34
+                    targetResource.type: Android
+                    targetResource.name: nsvdsub
+                    targetResource.internalId: 36
+                    topology.relation: connects
+                    topology.ipAddress: 2.4.67.7
+                    topology.id: a2a257d2-8461-4b77-887a-47d3963d4cbb
+                pageNo: 1
+                pageSize: 100
+                nextPage: false
+                descendingOrder: false
+            example-query-resource-out-relationships:
+              value:
+                results:
+                  - entityType: resource
+                    id: 0c0eccaf-3df8-4270-a3be-04f352001b7d
+                    name: teoindf
+                    type: Desktop
+                    internalId: 35
+                    targetResource.type: Android
+                    targetResource.name: nsvdsub
+                    targetResource.internalId: 36
+                    topology.relation: connects
+                    topology.ipAddress: 2.4.67.7
+                    topology.id: a2a257d2-8461-4b77-887a-47d3963d4cbb
+                  - entityType: resource
+                    id: a2a257d2-8461-4b77-887a-47d3963d4cbb
+                    name: nsvdsub
+                    type: Android
+                    internalId: 36
+                    targetResource.type: Linux
+                    targetResource.name: test
+                    targetResource.internalId: 37
+                    topology.relation: connects
+                    topology.ipAddress: 5.9.7.9
+                    topology.id: af96498d-d880-4a4b-9587-e3e0a33c4f90
+                  - entityType: resource
+                    id: deafe38e-61fd-45cc-ab50-d7cc6b1d5b8e
+                    name: tedf
+                    type: Linux
+                    internalId: 34
+                    targetResource.type: Android
+                    targetResource.name: nsvdsub
+                    targetResource.internalId: 36
+                    topology.relation: connects
+                    topology.ipAddress: 2.4.67.7
+                    topology.id: a2a257d2-8461-4b77-887a-47d3963d4cbb
+                pageNo: 1
+                pageSize: 100
+                nextPage: false
+                descendingOrder: false
+            example-query-like:
+              value:
+                results:
+                  - id: ff787390-0f3e-482f-9d11-b595b31f3f25
+                    subject: cpu utilization is 90%
+                    name: prod-server
+                    type: server
+                    metric: ping
+                    objectId: ee88e5bb-1242-4a6c-a9a0-2389447144b3
+                    objectName: resource-abc
+                    objectType: Server
+                    ipAddress: 172.25.40.1
+                    currentState: Critical
+                    status: Open
+                  - id: ff787390-0f3e-482f-9d11-b595b31f3f25
+                    subject: cpu utilization is 90%
+                    metric: generic metric
+                    name: prod-server
+                    type: server
+                    objectId: 0570dd0a-782f-432c-b9e8-10bdd7a6d3cb
+                    objectName: resource-def
+                    objectType: Server
+                    ipAddress: 172.25.50.1
+                    currentState: Critical
+                    status: Open
+                pageNo: 1
+                pageSize: 100
+                nextPage: false
+                descendingOrder: false
+tags:
+  - name: ql
+    description: OpsQL language
